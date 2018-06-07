@@ -35,5 +35,5 @@ class mesh_generator:
 			os.remove(os.path.join(directory, "coordinates_euclidian.txt"))
 			os.remove(os.path.join(directory, "coordinates_prolate_spheroidal.txt"))"""
 
-mesh_generator = mesh_generator("heart1.exfile", 1,1,1, "heart_1.vtu")#
+mesh_generator = mesh_generator("heart1.exfile", 3,3,1, "heart_1.vtu")#
 mesh_generator.generate_mesh()
