@@ -1,0 +1,16 @@
+*.pyc
+connectivity.txt
+coordinates_euclidian.txt
+coordinates_prolate_spheroidal.txt
+heart.exfile
+*.vtu
+*.exfile
+test_connectivity.txt
+*.pdf
+*.cmgui
+*.xml
+*.html
+*.json
+*.png
+vtu_data
+/Documentation
