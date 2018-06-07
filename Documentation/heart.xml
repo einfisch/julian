@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Fieldml version="0.5"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xlink="http://www.w3.org/1999/xlink"
+  xsi:noNamespaceSchemaLocation="http://www.fieldml.org/resources/xml/0.5/FieldML_0.5.xsd">
+ <Region name="heart">
+
+  <Import xlink:href="http://www.fieldml.org/resources/xml/0.5/FieldML_Library_0.5.xml" region="library">
+    <ImportType localName="real.1d" remoteName="real.1d"/>
+    <ImportType localName="parameters.3d.unit.triquadraticLagrange" remoteName="parameters.3d.unit.triquadraticLagrange"/>
+    <ImportType localName="coordinates.rc.3d" remoteName="coordinates.rc.3d"/>
+    <ImportType localName="coordinates.rc.3d.component" remoteName="coordinates.rc.3d.component"/>
+    <ImportType localName="boolean" remoteName="boolean"/>
+    <ImportEvaluator localName="parameters.3d.unit.triquadraticLagrange.argument" remoteName="parameters.3d.unit.triquadraticLagrange.argument"/>
+    <ImportEvaluator localName="interpolator.3d.unit.triquadraticLagrange" remoteName="interpolator.3d.unit.triquadraticLagrange"/>
+    <ImportEvaluator localName="chart.3d.argument" remoteName="chart.3d.argument"/>
+    <ImportEvaluator localName="localNodes.3d.cube3x3x3.argument" remoteName="localNodes.3d.cube3x3x3.argument"/>
+	 <ImportEvaluator localName="shape.unit.cube" remoteName="shape.unit.cube"/> 
+  </Import>
+
+  <EnsembleType name="heart.nodes.type">
+   <Members>
+    <MemberRange min="1" max="633" />
+   </Members>
+  </EnsembleType>
+
+  <ArgumentEvaluator name="heart.nodes.argument" valueType="heart.nodes.type" />
+
+
+  <DataResource name="heart.connectivity.resource">
+    <DataResourceDescription>
+      <DataResourceHref xlink:href="heart_mesh.connectivity" format="PLAIN_TEXT"/>
+    </DataResourceDescription>
+    <ArrayDataSource name="mesh.connectivity" location="1" rank="2">
+      <RawArraySize>
+      	60 27
+      </RawArraySize>
+    </ArrayDataSource>
+  </DataResource>
+
+  <MeshType name="heart.mesh.type">
+   <Elements name="element">
+     <Members>
+		 <MemberRange min="1" max="60" />
+     </Members>
+   </Elements>
+   <Chart name="xi">
+     <Components name="heart.mesh.type.xi.component" count="3"/>
+   </Chart>
+   <Shapes evaluator="shape.unit.cube" />
+  </MeshType>
+  
+  <ArgumentEvaluator name="heart.mesh.argument" valueType="heart.mesh.type" />
+
+  <ArgumentEvaluator name="heart.nodal_dofs" valueType="real.1d">
+   <Arguments>
+     <Argument name="heart.nodes.argument" />
+   </Arguments>
+  </ArgumentEvaluator>
+
+  <ParameterEvaluator name="heart.cube3x3x3_nodes" valueType="heart.nodes.type">
+   <DenseArrayData data="mesh.connectivity">
+    <DenseIndexes>
+     <IndexEvaluator evaluator="heart.mesh.argument.element" />
+     <IndexEvaluator evaluator="localNodes.3d.cube3x3x3.argument" />
+    </DenseIndexes>
+   </DenseArrayData>
+  </ParameterEvaluator>
+
+  <AggregateEvaluator name="heart.element_params.triquadraticLagrange" valueType="parameters.3d.unit.triquadraticLagrange">
+   <Bindings>
+     <BindIndex argument="localNodes.3d.cube3x3x3.argument" indexNumber="1"/>
+     <Bind argument="heart.nodes.argument" source="heart.cube3x3x3_nodes"/>
+   </Bindings>
+   <ComponentEvaluators default="heart.nodal_dofs" />
+  </AggregateEvaluator>
+
+  <ReferenceEvaluator name="heart.triquadraticLagrange" evaluator="interpolator.3d.unit.triquadraticLagrange"
+      valueType="real.1d">
+   <Bindings>
+    <Bind argument="chart.3d.argument" source="heart.mesh.argument.xi" />
+    <Bind argument="parameters.3d.unit.triquadraticLagrange.argument" source="heart.element_params.triquadraticLagrange" />
+   </Bindings>
+  </ReferenceEvaluator>
+
+  <PiecewiseEvaluator name="heart.template.triquadraticLagrange" valueType="real.1d">
+   <IndexEvaluators>
+     <IndexEvaluator evaluator="heart.mesh.argument.element" indexNumber="1" />
+   </IndexEvaluators>
+   <EvaluatorMap default="heart.triquadraticLagrange" />
+  </PiecewiseEvaluator>
+
+  <ArgumentEvaluator name="heart.rc3.component" valueType="coordinates.rc.3d.component" />
+
+  <DataResource name="heart.node.coordinates.resource">
+    <DataResourceDescription>
+      <DataResourceHref xlink:href="heart_mesh.node.coordinates" format="PLAIN_TEXT"/>
+    </DataResourceDescription>
+    <ArrayDataSource name="node.coordinates" location="1" rank="2">
+      <RawArraySize>
+      	633 3
+      </RawArraySize>
+    </ArrayDataSource>
+  </DataResource>
+
+  <ParameterEvaluator name="heart.node.coordinates" valueType="real.1d">
+   <DenseArrayData data="node.coordinates">
+    <DenseIndexes>
+	  <IndexEvaluator evaluator="heart.nodes.argument" />
+     <IndexEvaluator evaluator="heart.rc3.component" />
+    </DenseIndexes>
+   </DenseArrayData>
+  </ParameterEvaluator>
+
+  <AggregateEvaluator name="heart.coordinates" valueType="coordinates.rc.3d">
+   <Bindings>
+     <BindIndex argument="heart.rc3.component" indexNumber="1"/>
+     <Bind argument="heart.nodal_dofs" source="heart.node.coordinates"/>
+   </Bindings>
+   <ComponentEvaluators>
+    <ComponentEvaluator component="1" evaluator="heart.template.triquadraticLagrange" />
+    <ComponentEvaluator component="2" evaluator="heart.template.triquadraticLagrange" />
+    <ComponentEvaluator component="3" evaluator="heart.template.triquadraticLagrange" />
+   </ComponentEvaluators>
+  </AggregateEvaluator>
+
+  </Region>
+</Fieldml>

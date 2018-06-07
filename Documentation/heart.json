@@ -1,0 +1,51 @@
+{
+	 "View" : [
+		{
+    	"camera" : [9.70448, -288.334, -4.43035],
+	   "target" : [9.70448, 6.40667, -4.43035],
+	   "up"     : [-1, 0, 0],
+		"angle" : 40
+		}
+	 ],
+    "Models": [
+        {
+            "files": [
+                "heart.xml"
+            ],
+            "externalresources": [
+                "heart_mesh.connectivity",
+                "heart_mesh.node.coordinates"
+            ],
+            "graphics": [
+                {
+                    "type": "surfaces",
+						  "ambient" : [0.4, 0, 0.9],
+						  "diffuse" : [0.4, 0,0.9],
+				        "alpha" : 0.3,
+						  "xiFace" : "xi3_1",
+						  "coordinatesField": "heart.coordinates"
+                },
+                {
+                    "type": "surfaces",
+						  "ambient" : [0.3, 0, 0.3],
+						  "diffuse" : [1, 0, 0],
+				          "specular" : [0.5, 0.5, 0.5],
+						  "shininess" : 0.5,
+						  "xiFace" : "xi3_0",
+						  "coordinatesField" : "heart.coordinates"
+                },
+					 {
+						  "type": "lines",
+						  "coordinatesField" : "heart.coordinates"
+					 }
+            ], 
+				"elementDiscretization" : 8,
+				"region_name" : "heart",
+            "group": "Structures", 
+            "label": "heart",
+            "load": true
+        }
+	]
+}
+
+

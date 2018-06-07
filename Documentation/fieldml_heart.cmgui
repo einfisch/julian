@@ -1,0 +1,12 @@
+gfx create region heart;
+gfx read region heart.xml region heart;
+gfx define faces egroup heart;
+gfx create material heart ambient 0.3 0 0.3 diffuse 1 0 0 specular 0.5 0.5 0.5 shininess 0.5;
+gfx modify g_element heart general clear element_discretization "8*8*8";
+gfx modify g_element heart lines coordinate heart.coordinates select_on material default selected_material default_selected;
+gfx modify g_element heart surfaces coordinate heart.coordinates exterior select_on material heart selected_material default_selected render_shaded;
+gfx modify g_element heart node_points coordinate heart.coordinates glyph sphere general size "1*1*1" centre 0,0,0 font default select_on material default selected_material default_selected;
+gfx create window 1;
+gfx modify window 1 set perturb_lines;
+gfx modify window 1 view parallel eye_point -111.714 -95.2063 247.979 interest_point 9.6189 6.19689 -5.07412 up_vector -0.909491 0.238502 -0.340504 view_angle 31.6892 near_clipping_plane 2.98396 far_clipping_plane 1066.37 relative_viewport ndc_placement -1 1 2 2 viewport_coordinates 0 0 1 1;
+
