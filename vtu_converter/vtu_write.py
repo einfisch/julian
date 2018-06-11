@@ -1,6 +1,6 @@
 import os
-
-
+import exfile_reader
+import math
 def fineMeshWedges (con, coo):
     #creates Data for a mesh with 8 vertices per 27-element cell
     # uses wedges for the bottom cells
@@ -177,11 +177,74 @@ def wideMeshWedges (con, coo):
         line = con.readline()
     return [numPoints, numCells, region]
 
+def directional_field(angles, coo):
+    #function takes euclidian coordinates and fibre angles and returns data for vtu_coverter for the directional field
+    current_directory = os.getcwd()
+    directory = os.path.join(current_directory, r"vtu_data")
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    if os.path.isfile(os.path.join(directory, "region_angles.txt")):
+        os.remove(os.path.join(directory, "region_angles.txt"))
+    if os.path.isfile(os.path.join(directory, "vertices_angles.txt")):
+        os.remove(os.path.join(directory, "vertices_angles.txt"))
+    if os.path.isfile(os.path.join(directory, "cellTypesVTU_angles.txt")):
+        os.remove(os.path.join(directory, "cellTypesVTU_angles.txt"))
+    if os.path.isfile(os.path.join(directory, "offset_angles.txt")):
+        os.remove(os.path.join(directory, "offset_angles.txt"))
+    if os.path.isfile(os.path.join(directory, "cells_angles.txt")):
+        os.remove(os.path.join(directory, "cells_angles.txt"))
+    cellTypeFile = open(os.path.join(directory, "cellTypesVTU_angles.txt"), "w+")
+    regionFile = open(os.path.join(directory, "region_angles.txt"), "w+")
+    offsetFile = open(os.path.join(directory, "offset_angles.txt"), "w+")
+    cellFile = open(os.path.join(directory, "cells_angles.txt"), "w+")
+    vert = open(os.path.join(directory, "vertices_angles.txt"), "w+")
+    offset = 0
+    region = 0
+    numPoints = 0
+    numCells = 0
+    line_coords = coo.readline()
+    line_angles = angles.readline()
+    connectivity = []
+
+    while (line_coords):
+        coords = line_coords.split(" ")
+        fibre_angles = line_angles.split(" ")
+        x = float(coords[0]) 
+        y = float(coords[1])
+        z = float(coords[2])
+        #TODO: correct angles etc
+        #print(fibre_angles)
+        x1 = x +3*math.sin((float(fibre_angles[0] )))*math.cos((float(fibre_angles[2])))
+        y1 = y + 3*math.sin((float(fibre_angles[0]) ))*math.sin((float(fibre_angles[2]) ))
+        z1 = z +3*math.cos((float(fibre_angles[0]) ))
+       
+        new_line = line_coords  + str(x1) + " " + str(y1) + " " + str(z1) + "\r\n"
+        vert.write(new_line)
+        cellTypeFile.write("1 1 ")
+        offset += 2
+        offsetFile.write(str(offset - 1) + " " +str(offset ) + " ")
+        
+        regionFile.write(str(0) +" " +str(0) + " ")
+        
+        cellFile.write(str(numPoints ) + " " + str(numPoints + 1) +" ")
+        connectivity.append([numPoints , numPoints + 1])
+        numPoints += 2
+        line_angles = angles.readline()
+        line_coords = coo.readline()
+    for edge in connectivity:
+        numCells += 1
+        cellTypeFile.write("3 ")
+        offset += 2
+        offsetFile.write(str(offset) + " " )
+        cellFile.write(str(edge[0]) +" " +str(edge[1]) + "\r\n")
+        regionFile.write("0 ")
+    return [numPoints, numCells, 0]
+
 
 
     
-def create_file(coo, numPoints, numCells, subsets, out):    
-    
+def create_file(coo, numPoints, numCells, subsets, out, angles):    
+    print("test")
     current_directory = os.getcwd()
     directory = os.path.join(current_directory, r"vtu_data")
     vtuOut = open(out, "w+")
@@ -198,7 +261,10 @@ def create_file(coo, numPoints, numCells, subsets, out):
     vtuOut.write("<Points>\n")
     vtuOut.write("<DataArray type=\"Float32\" NumberOfComponents=\"3\" format=\"ascii\">\n")
     #write point coordinates to VTU-File
-    coordFile = open(coo, "r")
+    if angles:
+        coordFile = open(os.path.join(directory, coo))
+    else:
+        coordFile = open(coo, "r")
     line = coordFile.readline()
 
     while line:
@@ -210,7 +276,10 @@ def create_file(coo, numPoints, numCells, subsets, out):
     vtuOut.write("</Points>\n")
     vtuOut.write("<Cells>\n")
     vtuOut.write(" <DataArray type=\"Int32\" Name=\"connectivity\" format=\"ascii\">\n")
-    connectivity = open(os.path.join(directory, "cells.txt"))
+    if angles:
+        connectivity = open(os.path.join(directory, "cells_angles.txt"))
+    else:
+        connectivity = open(os.path.join(directory, "cells.txt"))
     line = connectivity.readline()
     while line:
         vtuOut.write(line)
@@ -218,14 +287,21 @@ def create_file(coo, numPoints, numCells, subsets, out):
 
     vtuOut.write("</DataArray>\n")
     vtuOut.write("<DataArray type=\"Int32\" Name=\"offsets\" format=\"ascii\">\n")
-    offset = open(os.path.join(directory, "offset.txt"))
+    if angles:
+        offset = open(os.path.join(directory, "offset_angles.txt"))
+    else:
+        offset = open(os.path.join(directory, "offset.txt"))
     line = offset.readline()
     while line:
         vtuOut.write(line)
         line = offset.readline()
     vtuOut.write("</DataArray>\n")
     vtuOut.write("<DataArray type=\"Int8\" Name=\"types\" format=\"ascii\">\n")
-    cellTypes = open(os.path.join(directory, "cellTypesVTU.txt"))
+    
+    if angles:
+        cellTypes = open(os.path.join(directory, "cellTypesVTU_angles.txt"))
+    else:    
+        cellTypes = open(os.path.join(directory, "cellTypesVTU.txt"))
     line = cellTypes.readline()
     while line:
         vtuOut.write(line)
@@ -236,7 +312,10 @@ def create_file(coo, numPoints, numCells, subsets, out):
     vtuOut.write("</PointData>\n")
     vtuOut.write("<CellData>\n")
     vtuOut.write("<DataArray type=\"Int32\" Name=\"regions\" NumberOfComponents=\"1\" format=\"ascii\">\n")
-    region = open(os.path.join(directory, "region.txt"))
+    if angles:
+        region = open(os.path.join(directory, "region_angles.txt"))
+    else:
+        region = open(os.path.join(directory, "region.txt"))
     line = region.readline()
     while line:
         vtuOut.write(line)
@@ -254,3 +333,4 @@ def create_file(coo, numPoints, numCells, subsets, out):
     vtuOut.write("</Piece>")
     vtuOut.write("</UnstructuredGrid> \n")
     vtuOut.write("</VTKFile>")
+

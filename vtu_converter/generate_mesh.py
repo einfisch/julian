@@ -1,5 +1,6 @@
 import vtu_converter
 import exfile_reader
+from vtu_write import directional_field
 import os
 from prolate_spheroidal_to_euclidian import prolate_spheroid_to_euclidian
 
@@ -20,14 +21,16 @@ class mesh_generator:
 		vtu_conv = vtu_converter.VTU_converter()
 		print(self.refinement1)
 		if (self.refinement1 > 0 or self.refinement2 > 0 or self.refinement3 > 0):
-			ex_reader.test_interpolation("interpolation.exfile", self.refinement1, self.refinement2, self.refinement3)
+			ex_reader.kd_interpolation("interpolation.exfile", self.refinement1, self.refinement2, self.refinement3)
 			ex_reader = exfile_reader.exfile_reader("interpolation.exfile")
 		ex_reader.create_node_coordinates()
 		ex_reader.create_node_connectivity()
-
+		ex_reader.create_fibre_values()
 		prolate_spheroid_to_euclidian("coordinates_prolate_spheroidal.txt", "coordinates_euclidian.txt", 0.3525E+02)
 		coords = "coordinates_euclidian.txt"
 		cons = "connectivity.txt"
+		vtu_conv.directional_field( "coordinates_euclidian.txt", "fibre_values_spheroidal.txt","directional_field1.vtu")
+
 		vtu_conv.heart_to_vtu(cons, coords, self.out_file)
 		"""if (delete_data == True):
 			directory = os.getcwd()
@@ -35,5 +38,5 @@ class mesh_generator:
 			os.remove(os.path.join(directory, "coordinates_euclidian.txt"))
 			os.remove(os.path.join(directory, "coordinates_prolate_spheroidal.txt"))"""
 
-mesh_generator = mesh_generator("heart1.exfile", 3,3,1, "heart_1.vtu")#
+mesh_generator = mesh_generator("heart1.exfile", 1,1,1, "heart_123.vtu")#
 mesh_generator.generate_mesh()
