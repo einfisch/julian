@@ -91,33 +91,192 @@ class exfile_reader:
 			element = ele_iter.next()
 			ele_template = element.getElementfieldtemplate(field, 1)
 
-	def create_direction_field (self, in_file , out_file = "direction_field.exfile"):
+	def create_directional_field (self, out_file = "fibres.exfile", refinement1 = 1, refinement2 = 1, refinement3 = 1):
+		
 		if os.path.isfile("/tmp/" + out_file):
 			os.remove("/tmp/" + out_file)
 		out = open(out_file, "w+")
 		context = Context("heart")
 		region = context.getDefaultRegion()
-		region.readFile(in_file)
+		region.readFile(self.in_file)
 		fieldmodule = region.getFieldmodule()
 		field = fieldmodule.findFieldByName("coordinates")
 		field_fibres = fieldmodule.findFieldByName("fibres")
+		mesh = fieldmodule.findMeshByDimension(3)
+		#mesh_1d = fieldmodule.findMeshByDimension(1)
+		field = field.castFiniteElement()
+		field_fibres = field_fibres.castFiniteElement()
 		cache = fieldmodule.createFieldcache()
 		node_set = fieldmodule.findNodesetByName("nodes")
-		mesh = fieldmodule.findMeshByDimension(3)
 		node_template = node_set.createNodetemplate()
 		node_template.defineField(field)
 		node_template.defineField(field_fibres)
-		mesh.destroyAllElements()#we only want edges between old and new vertices
+
 		node_iter = node_set.createNodeiterator()	#create the node iterator
-		node = node_iter.next()
+
+		l2 = 1.0/2**refinement2
+		l3 = 1.0/2**refinement3
+		l1 = 1.0/2**refinement1	#length of sides of local cells after refinement
 		
-		while node.isValid():
+		counter = 0
+		
+		ele_counter = 0
+		num_ele = mesh.getSize()
+		mesh_size = mesh.getSize()
+
+		buckets = {}
+		bucket_values = []
+		#node_coordinates = []#list that contains all node coordinates to check for doubles.
+		node = node_iter.next()
+		while node.isValid(): #get number of total nodes befor refinement
+			counter += 1
+			
 			cache.setNode(node)
 			result, coords = field.evaluateReal(cache, 3)
-			result, angles = field_fibres.evaluateReal(cache, 3)
-			coords = to_euclidian(coords) #transform prolate spheroidal to euclidian coordinates
-			newCoords = [coords[0] + 1, coords[1] + 1, coords[2] + 1]
+			coords = to_euclidian(coords)
+			coord_value = coords[0] + coords[1] + coords[2]
+			
+			bucket_values.append(coord_value)
+			node = node_iter.next()
+			#node_coordinates.append(coords)
+		#print(buckets)
+		bucket_max = max(bucket_values)
+		bucket_min = min(bucket_values)
+		bucket_values = []
+		bucket_interval = (bucket_max - bucket_min)/10000.0
+		#bucket_values = sorted(bucket_values)
+		buckets = {}
+		for i in range(0,10000):
+			#bucket_value = i*bucket_interval + bucket_min 
+			buckets[i] = []
+			#bucket_values.append(bucket_value)
+		print (len(bucket_values))
+		
+		node_iter = node_set.createNodeiterator()
+		node = node_iter.next()
 
+
+		#print(buckets)
+		c = 0
+		fieldmodule.beginChange()
+		node_set.destroyAllNodes()
+		print(node_set.getSize())
+		while c < mesh_size:
+			element = mesh.findElementByIdentifier(c +1)
+			#get elementfieldtemplates to create new elements of the refined mesh
+			ele_field_template1 = element.getElementfieldtemplate(field,1)
+			
+			
+			#iterte over x,y and z axis, depending on refinement for x,y and z axis
+			node_set_test = []
+			for i in range(0, ele_field_template1.getNumberOfLocalNodes() ):
+				current_node = element.getNode(ele_field_template1, i + 1)
+				node_set_test.append(current_node)
+			#print (node_set_test)
+			for i in range(0, 2**refinement1):
+				for j in range(0, 2**refinement2 ):
+					for k in range(0, 2**refinement3 ):
+
+						node_identifiers = [] #list of node identifiers to be used for the new element
+						#local coordinates of one new element, based on local coordinates of parent element
+						local_node_coordinates = [[0 + i*l1,0 + j*l2,0 + k*l3], [l1 + i*l1 ,0 + j*l2,0 + k*l3],\
+						 [0 + i*l1,l2 + j*l2,0 + k*l3],[l1 + i*l1,l2 + j*l2,0 + k*l3], [0 + i*l1,0 + j*l2,l3 + k*l3],\
+						 [l1 + i*l1,0 + j*l2,l3 + k*l3],\
+						  [0 + i*l1 ,l2 + j*l2,l3 + k*l3],[l1 + i*l1 ,l2 + j*l2,l3 + k*l3]]	
+						
+
+
+						#print(local_node_coordinates)
+						#create a new node for every local coordinate
+						
+						for local_coords in local_node_coordinates:
+							
+							
+							linear_basis = fieldmodule.createElementbasis(3, 2)
+							node_indexes = [1,2]
+							#fibre-angle is angle between x1 and x2 axis of local element. add new node to visualize this angle with distance
+							#or length of the edge at vec_len
+							edge = []
+							cache.setMeshLocation(element, local_coords)
+							result, global_coords = field.evaluateReal(cache, 3)
+							result, global_angles = field_fibres.evaluateReal(cache, 3)
+							euclidian_coords = to_euclidian(global_coords)
+							coord_value = euclidian_coords[0] + euclidian_coords[1] + euclidian_coords[2]
+							#do the same for for the fibre-angles
+							result, global_angles = field_fibres.evaluateReal(cache, 3)
+							fibre_angle = global_angles[0]
+							x_angle = math.sin(fibre_angle) +  local_coords[2]
+							y_angle = math.cos(fibre_angle) +local_coords[1]
+							z_angle =    local_coords[0]
+							bucket = 0
+							
+							bucket_value = (coord_value - bucket_min)//bucket_interval
+							if bucket_value < 0:
+								bucket_value = 0
+							if bucket_value > 9999:
+								bucket_value = 9999
+							#print(bucket)
+							#check if coordinates belong to an already existing node by comparing euclidian distance
+							already_existing = False
+							#print(bucket_value)
+							unified_buckets = []
+							if bucket_value == 0:
+								unified_buckets = buckets[bucket_value] + buckets[bucket_value+1]
+							elif bucket_value == 9999:
+								unified_buckets = buckets[bucket_value-1] + buckets[bucket_value]
+							else:
+								unified_buckets = buckets[bucket_value-1] + buckets[bucket_value] + buckets[bucket_value +1]
+							for node_test in unified_buckets:
+								
+								#print(distance(global_coords,coordinates))
+								cache.clearLocation()
+								cache.setNode(node_test)
+								coord_test = []
+								result, coord_test = field.evaluateReal(cache, 3)
+								if (distance(global_coords,coord_test) < 1E-4):
+									already_existing = True
+									
+									break
+							
+
+
+							#create new node with the interpolated global coordinates and interpolated fibre-angles
+							if (already_existing == False):
+								#create interpolated node
+								node = node_set.createNode(counter + 1, node_template)
+
+								cache.setNode(node)
+								#print(global_coords)
+								field.assignReal(cache, global_coords)
+								field_fibres.assignReal(cache, global_angles)
+								edge.append(counter + 1)
+								buckets[bucket_value].append(node)
+								counter += 1
+								#create node to visualize fibre angle
+								coords_angle = [z_angle, y_angle, x_angle]
+
+								print(coords_angle)
+								cache.setMeshLocation(element, coords_angle)
+								result, global_coords = field.evaluateReal(cache, 3)
+								print(global_coords)
+								node_edge = node_set.createNode(counter + 1, node_template)
+								cache.setNode(node_edge)
+								field.assignReal(cache, global_coords)
+								edge.append(counter + 1)
+								counter += 1
+
+									
+			print(str(num_ele) + " of " + str(60 * 2**refinement1 * 2**refinement2 * 2**refinement3 -60) + " elements created.")
+			mesh.destroyElement(element)
+			c += 1
+		for i in range(1,100):
+			node_dest = node_set.findNodeByIdentifier(i)
+			node_set.destroyNode(node_dest)
+		region.writeFile(out_file)
+		print("done")
+		fieldmodule.endChange()		
+		
+		
 
 
 		num_nodes = node_set.getSize()	#get number of vertices in nodeset
@@ -357,6 +516,7 @@ class exfile_reader:
 						
 						node_indexes = [1,2,3,4,5,6,7,8]
 						element_template.setElementShapeType(element.SHAPE_TYPE_CUBE)
+
 						element_template.setNumberOfNodes(8)
 							
 						basislamda = fieldmodule.createElementbasis(3, Elementbasis.FUNCTION_TYPE_CUBIC_HERMITE)#cubic hermite

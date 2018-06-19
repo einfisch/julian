@@ -177,7 +177,7 @@ def wideMeshWedges (con, coo):
         line = con.readline()
     return [numPoints, numCells, region]
 
-def directional_field(angles, coo):
+def directional_field(coo, r):
     #function takes euclidian coordinates and fibre angles and returns data for vtu_coverter for the directional field
     current_directory = os.getcwd()
     directory = os.path.join(current_directory, r"vtu_data")
@@ -203,39 +203,61 @@ def directional_field(angles, coo):
     numPoints = 0
     numCells = 0
     line_coords = coo.readline()
-    line_angles = angles.readline()
+    
     connectivity = []
-
+    toggle = False
     while (line_coords):
         coords = line_coords.split(" ")
-        fibre_angles = line_angles.split(" ")
-        x = float(coords[0]) 
-        y = float(coords[1])
-        z = float(coords[2])
-        #TODO: correct angles etc
-        #print(fibre_angles)
-        x1 = x +3*math.sin((float(fibre_angles[0] )))*math.cos((float(fibre_angles[2])))
-        y1 = y + 3*math.sin((float(fibre_angles[0]) ))*math.sin((float(fibre_angles[2]) ))
-        z1 = z +3*math.cos((float(fibre_angles[0]) ))
-       
-        new_line = line_coords  + str(x1) + " " + str(y1) + " " + str(z1) + "\r\n"
-        vert.write(new_line)
-        cellTypeFile.write("1 1 ")
-        offset += 2
-        offsetFile.write(str(offset - 1) + " " +str(offset ) + " ")
+
+        cellTypeFile.write("1 ")
+        offset += 1
+        offsetFile.write(str(offset ) + " ")
         
-        regionFile.write(str(0) +" " +str(0) + " ")
+        regionFile.write(str(0)  + " ")
         
-        cellFile.write(str(numPoints ) + " " + str(numPoints + 1) +" ")
-        connectivity.append([numPoints , numPoints + 1])
-        numPoints += 2
-        line_angles = angles.readline()
+        cellFile.write(str(numPoints  ) + " " )
+        
+        
+        if (toggle == True):
+            connectivity.append([numPoints - 1 , numPoints -0 ])
+            #use linear interpolation to create vertex with distance equal to r
+            
+            x = float(old_coords[0])
+            y = float(old_coords[1])
+            z = float(old_coords[2])
+
+            vert.write(str(x) + " " + str(y) + " " + str(z) +"\r\n")
+
+            x1 = float(coords[0])
+            y1 = float(coords[1])
+            z1 = float(coords[2])
+            v1 = x1 - x
+            v2 = y1 - y
+            v3 = z1 - z
+
+            p = (-2)*(x*v1 + y*v2 + z*v3)/(v1*v1 + v2*v2 + v3*v3)
+            q = (x*x + y*y + z*z - r*r)/(v1*v1 + v2*v2 + v3*v3)
+            ###
+            b = v1*v1 + v2*v2 + v3*v3
+            ###
+            lam = r/(b**0.5)
+            print(lam) 
+            
+            x3 = x+ lam*v1
+            y3 = y+lam*v2
+            z3 = z+ lam*v3 
+            print(((x-x3)**2+(y-y3)**2+(z-z3)**2)**0.5)
+
+            vert.write(str(x3) + " " + str(y3) + " " + str(z3) +"\r\n")
+        toggle = not toggle
+        numPoints += 1
         line_coords = coo.readline()
+        old_coords = coords
     for edge in connectivity:
         numCells += 1
         cellTypeFile.write("3 ")
         offset += 2
-        offsetFile.write(str(offset) + " " )
+        offsetFile.write(str(offset - 0) + " " )
         cellFile.write(str(edge[0]) +" " +str(edge[1]) + "\r\n")
         regionFile.write("0 ")
     return [numPoints, numCells, 0]
@@ -328,7 +350,7 @@ def create_file(coo, numPoints, numCells, subsets, out, angles):
     while i < subsets:
         i += 1
         vtuOut.write("<Region Name=\"cell " +str(i) + "\"></Region>\n")
-        
+       
     vtuOut.write("</RegionInfo>\n")
     vtuOut.write("</Piece>")
     vtuOut.write("</UnstructuredGrid> \n")
