@@ -48,7 +48,7 @@ class mesh_generator:
 		prolate_spheroid_to_euclidian("fibres_nodes.txt", "fibres_nodes_euclidian.txt", 0.3525E+02)
 		coords = "coordinates_euclidian.txt"
 		cons = "connectivity.txt"
-		vtu_conv.write_directional_field( "fibres_nodes_euclidian.txt","fibres.vtu", 3)
+		vtu_conv.write_directional_field( "fibres_nodes_euclidian.txt","fibres.vtu", 4)
 
 		vtu_conv.heart_to_vtu(cons, coords, self.out_file)
 		if (delete_data == True):
@@ -57,5 +57,5 @@ class mesh_generator:
 			os.remove(os.path.join(directory, "coordinates_euclidian.txt"))
 			os.remove(os.path.join(directory, "coordinates_prolate_spheroidal.txt"))
 
-mesh_generator = mesh_generator("heart1.exfile", 2,2,2, "heart_111.vtu")#
+mesh_generator = mesh_generator("heart1.exfile", 3,3,2, "heart_332.vtu")#
 mesh_generator.generate_mesh()

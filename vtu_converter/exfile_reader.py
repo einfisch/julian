@@ -179,11 +179,11 @@ class exfile_reader:
 
 						node_identifiers = [] #list of node identifiers to be used for the new element
 						#local coordinates of one new element, based on local coordinates of parent element
-						local_node_coordinates = [[0 + i*l1,0 + j*l2,0 + k*l3], [l1 + i*l1 ,0 + j*l2,0 + k*l3],\
+						"""local_node_coordinates = [[0 + i*l1,0 + j*l2,0 + k*l3], [l1 + i*l1 ,0 + j*l2,0 + k*l3],\
 						 [0 + i*l1,l2 + j*l2,0 + k*l3],[l1 + i*l1,l2 + j*l2,0 + k*l3], [0 + i*l1,0 + j*l2,l3 + k*l3],\
 						 [l1 + i*l1,0 + j*l2,l3 + k*l3],\
-						  [0 + i*l1 ,l2 + j*l2,l3 + k*l3],[l1 + i*l1 ,l2 + j*l2,l3 + k*l3]]	
-						
+						  [0 + i*l1 ,l2 + j*l2,l3 + k*l3],[l1 + i*l1 ,l2 + j*l2,l3 + k*l3]]"""
+						local_node_coordinates = [[0.5*l1+i*l1, 0.5*l2+j*l2, 0.5*l3+k*l3]]	
 
 
 						#print(local_node_coordinates)
@@ -205,9 +205,11 @@ class exfile_reader:
 							#do the same for for the fibre-angles
 							result, global_angles = field_fibres.evaluateReal(cache, 3)
 							fibre_angle = global_angles[0]
-							x_angle = math.sin(fibre_angle) +  local_coords[2]
-							y_angle = math.cos(fibre_angle) +local_coords[1]
-							z_angle =    local_coords[0]
+							#fibre_angle = 3.141/2
+
+							x_angle = local_coords[2]#math.sin(fibre_angle) +  local_coords[2]
+							y_angle =  0.1*math.sin(fibre_angle) + local_coords[1]
+							z_angle =  0.1*math.cos(fibre_angle) + local_coords[0]
 							bucket = 0
 							
 							bucket_value = (coord_value - bucket_min)//bucket_interval
@@ -255,10 +257,10 @@ class exfile_reader:
 								#create node to visualize fibre angle
 								coords_angle = [z_angle, y_angle, x_angle]
 
-								print(coords_angle)
+								#print(coords_angle)
 								cache.setMeshLocation(element, coords_angle)
 								result, global_coords = field.evaluateReal(cache, 3)
-								print(global_coords)
+								#print(global_coords)
 								node_edge = node_set.createNode(counter + 1, node_template)
 								cache.setNode(node_edge)
 								field.assignReal(cache, global_coords)

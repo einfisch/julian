@@ -235,18 +235,19 @@ def directional_field(coo, r):
             v2 = y1 - y
             v3 = z1 - z
 
-            p = (-2)*(x*v1 + y*v2 + z*v3)/(v1*v1 + v2*v2 + v3*v3)
-            q = (x*x + y*y + z*z - r*r)/(v1*v1 + v2*v2 + v3*v3)
+            
             ###
             b = v1*v1 + v2*v2 + v3*v3
             ###
-            lam = r/(b**0.5)
-            print(lam) 
+            lam = 0
+            if (not(b == 0)):
+                lam = r/(b**0.5)
+            #print(lam) 
             
             x3 = x+ lam*v1
             y3 = y+lam*v2
             z3 = z+ lam*v3 
-            print(((x-x3)**2+(y-y3)**2+(z-z3)**2)**0.5)
+            #print(((x-x3)**2+(y-y3)**2+(z-z3)**2)**0.5)
 
             vert.write(str(x3) + " " + str(y3) + " " + str(z3) +"\r\n")
         toggle = not toggle
