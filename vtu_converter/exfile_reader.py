@@ -190,6 +190,7 @@ class exfile_reader:
 						 [l1 + i*l1,0 + j*l2,l3 + k*l3],\
 						  [0 + i*l1 ,l2 + j*l2,l3 + k*l3],[l1 + i*l1 ,l2 + j*l2,l3 + k*l3]]"""
 						local_node_coordinates = [[0.5*l1+i*l1, 0.5*l2+j*l2, 0.5*l3+k*l3]]	
+						#local_node_coordinates = [[1*l1+i*l1, 1*l2+j*l2, 1*l3+k*l3]]
 
 
 						#print(local_node_coordinates)
@@ -211,11 +212,12 @@ class exfile_reader:
 							#do the same for for the fibre-angles
 							result, global_angles = field_fibres.evaluateReal(cache, 3)
 							fibre_angle = global_angles[0]
-							#fibre_angle = 3.141/2
-
+							
+							#if (fibre_angle > 3.1415):
+							#print(fibre_angle)
 							x_angle = local_coords[2]#math.sin(fibre_angle) +  local_coords[2]
-							y_angle =  0.1*math.sin(fibre_angle) + local_coords[1]
-							z_angle =  0.1*math.cos(fibre_angle) + local_coords[0]
+							y_angle =  0.0000001*math.sin(fibre_angle) + local_coords[1]
+							z_angle =  0.0000001*math.cos(fibre_angle) + local_coords[0]
 							bucket = 0
 							
 							bucket_value = (coord_value - bucket_min)//bucket_interval

@@ -231,10 +231,14 @@ def directional_field(coo, r):
             x1 = float(coords[0])
             y1 = float(coords[1])
             z1 = float(coords[2])
+             
             v1 = x1 - x
             v2 = y1 - y
-            v3 = z1 - z
-
+            v3 = z1-z
+            #else:
+               # v1 = x - x1
+               # v2 = y - y1
+               # v3 = z - z1
             
             ###
             b = v1*v1 + v2*v2 + v3*v3
