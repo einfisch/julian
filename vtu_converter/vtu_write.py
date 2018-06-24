@@ -152,7 +152,7 @@ def wideMeshWedges (con, coo):
     #iterate for every line in the connection-file:
     line = con.readline()
     while (line):
-        region += 1
+        
         reS = str(region) + " "
         s = line.split(" ")
         if s[7] == "-1": #if last two nodes are -1 we have a wedge-shaped cell
@@ -226,7 +226,7 @@ def directional_field(coo, r):
             y = float(old_coords[1])
             z = float(old_coords[2])
 
-            vert.write(str(x) + " " + str(y) + " " + str(z) +"\r\n")
+            #vert.write(str(x) + " " + str(y) + " " + str(z) +"\r\n")
 
             x1 = float(coords[0])
             y1 = float(coords[1])
@@ -243,12 +243,15 @@ def directional_field(coo, r):
             if (not(b == 0)):
                 lam = r/(b**0.5)
             #print(lam) 
-            
-            x3 = x+ lam*v1
-            y3 = y+lam*v2
-            z3 = z+ lam*v3 
-            #print(((x-x3)**2+(y-y3)**2+(z-z3)**2)**0.5)
+            x2 = x - 0.5*lam*v1
+            y2 = y - 0.5*lam*v2
+            z2 = z - 0.5*lam*v3
+            x3 = x+ 0.5*lam*v1
+            y3 = y+0.5*lam*v2
+            z3 = z+ 0.5*lam*v3
 
+            #print(((x-x3)**2+(y-y3)**2+(z-z3)**2)**0.5)
+            vert.write(str(x2) + " " + str(y2) + " " + str(z2) +"\r\n")
             vert.write(str(x3) + " " + str(y3) + " " + str(z3) +"\r\n")
         toggle = not toggle
         numPoints += 1
@@ -267,7 +270,8 @@ def directional_field(coo, r):
 
     
 def create_file(coo, numPoints, numCells, subsets, out, angles):    
-    print("test")
+    
+    print("exporting " + out +" ...")
     current_directory = os.getcwd()
     directory = os.path.join(current_directory, r"vtu_data")
     vtuOut = open(out, "w+")

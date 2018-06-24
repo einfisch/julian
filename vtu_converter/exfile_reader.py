@@ -1,6 +1,8 @@
 import os
 import math
 import numpy as np
+import time
+import sys
 from opencmiss.zinc.context import Context
 from opencmiss.zinc.status import OK as ZINC_OK
 def distance(coord1, coord2):
@@ -44,7 +46,7 @@ class exfile_reader:
 		node_iter = node_set.createNodeiterator()	#create the node iterator
 		counter = 0
 		node = node_iter.next()
-		print (field)
+		#print (field)
 		while node.isValid():
 			cache.setNode(node) 	#sets the fieldcache-position to the current node
 			"""test = field.getNodeParameters(cache, 1, node.VALUE_LABEL_D_DS1, 1, 10)
@@ -58,7 +60,7 @@ class exfile_reader:
 				break
 			node = node_iter.next()
 			counter += 1
-		print(str(counter) + " nodes evaluated successfully")
+		#print(str(counter) + " nodes evaluated successfully")
 	def create_node_connectivity(self, out_file = "connectivity.txt"):
 		if os.path.isfile("/tmp/" + out_file):
 			os.remove("/tmp/" + out_file)
@@ -92,7 +94,9 @@ class exfile_reader:
 			ele_template = element.getElementfieldtemplate(field, 1)
 
 	def create_directional_field (self, out_file = "fibres.exfile", refinement1 = 1, refinement2 = 1, refinement3 = 1):
-		
+		fine_mesh_size = 60*2**refinement1 * 2**refinement2 * 2**refinement3 
+		print("generating fibres...")
+		program_status = ""
 		if os.path.isfile("/tmp/" + out_file):
 			os.remove("/tmp/" + out_file)
 		out = open(out_file, "w+")
@@ -150,7 +154,7 @@ class exfile_reader:
 			#bucket_value = i*bucket_interval + bucket_min 
 			buckets[i] = []
 			#bucket_values.append(bucket_value)
-		print (len(bucket_values))
+		#print (len(bucket_values))
 		
 		node_iter = node_set.createNodeiterator()
 		node = node_iter.next()
@@ -160,8 +164,10 @@ class exfile_reader:
 		c = 0
 		fieldmodule.beginChange()
 		node_set.destroyAllNodes()
-		print(node_set.getSize())
+		#print(node_set.getSize())
+		fibers_created = 0
 		while c < mesh_size:
+			
 			element = mesh.findElementByIdentifier(c +1)
 			#get elementfieldtemplates to create new elements of the refined mesh
 			ele_field_template1 = element.getElementfieldtemplate(field,1)
@@ -176,7 +182,7 @@ class exfile_reader:
 			for i in range(0, 2**refinement1):
 				for j in range(0, 2**refinement2 ):
 					for k in range(0, 2**refinement3 ):
-
+						
 						node_identifiers = [] #list of node identifiers to be used for the new element
 						#local coordinates of one new element, based on local coordinates of parent element
 						"""local_node_coordinates = [[0 + i*l1,0 + j*l2,0 + k*l3], [l1 + i*l1 ,0 + j*l2,0 + k*l3],\
@@ -245,6 +251,7 @@ class exfile_reader:
 							#create new node with the interpolated global coordinates and interpolated fibre-angles
 							if (already_existing == False):
 								#create interpolated node
+								fibers_created+= 1
 								node = node_set.createNode(counter + 1, node_template)
 
 								cache.setNode(node)
@@ -268,14 +275,16 @@ class exfile_reader:
 								counter += 1
 
 									
-			print(str(num_ele) + " of " + str(60 * 2**refinement1 * 2**refinement2 * 2**refinement3 -60) + " elements created.")
+			#print(str(num_ele) + " of " + str(60 * 2**refinement1 * 2**refinement2 * 2**refinement3 -60) + " elements created.")
 			mesh.destroyElement(element)
+			progress = (1.0)*(fibers_created)/ (fine_mesh_size)
+			update_progress(progress, program_status)
 			c += 1
 		for i in range(1,100):
 			node_dest = node_set.findNodeByIdentifier(i)
 			node_set.destroyNode(node_dest)
 		region.writeFile(out_file)
-		print("done")
+		#print("done")
 		fieldmodule.endChange()		
 		
 		
@@ -314,9 +323,10 @@ class exfile_reader:
 				break
 			node = node_iter.next()
 			counter += 1
-		print(str(counter) + " nodes evaluated successfully")
+		#print(str(counter) + " nodes evaluated successfully")
 	def kd_interpolation (self, out_file = "interpolation.exfile", refinement1 = 1, refinement2 = 1, refinement3 = 1):
-		
+		fine_mesh_size = 60*2**refinement1 * 2**refinement2 * 2**refinement3 
+		print("generating mesh...")
 		if os.path.isfile("/tmp/" + out_file):
 			os.remove("/tmp/" + out_file)
 		out = open(out_file, "w+")
@@ -383,9 +393,9 @@ class exfile_reader:
 			#bucket_value = i*bucket_interval + bucket_min 
 			buckets[i] = []
 			#bucket_values.append(bucket_value)
-		print (len(bucket_values))
+		#print (len(bucket_values))
 		#print(bucket_values[0])
-		print(bucket_min)
+		#print(bucket_min)
 		node_iter = node_set.createNodeiterator()
 		node = node_iter.next()
 		while node.isValid(): #get number of total nodes befor refinement
@@ -552,233 +562,26 @@ class exfile_reader:
 						new_element = mesh.createElement(num_ele +1,element_template )
 						
 						num_ele += 1
-			print(str(num_ele) + " of " + str(60 * 2**refinement1 * 2**refinement2 * 2**refinement3 -60) + " elements created.")
+			program_status = str(num_ele - 60) + " of " + str(fine_mesh_size) + " elements created."
+			progress = (1.0)*(num_ele - 60)/ (fine_mesh_size)
+			update_progress(progress, program_status)
 			mesh.destroyElement(element)
 			c += 1
 
 		region.writeFile(out_file)
-		print("done")
+		#print("done")
 		fieldmodule.endChange()		
 		
-
+def update_progress(progress, program_status):
+	#takes a progress as float and prints a progressbar to the console
+	bar = 20
+	
+	output = ""
+	if (progress >= 1):
+		program_status = "Finished...                                              \r\n"
+	block_count = int(round(bar*progress))
+	text = "\rPercent: [{0}] {1}% {2}".format( "#"*block_count + "-"*(bar-block_count), round(progress*100), program_status)
+	sys.stdout.write(text)
+	sys.stdout.flush()
 	
 	
-"""if ([round(elem, 6) for elem in coordinates] in finished):
-									x3 += 0.5
-									
-									continue"""
-#reader = exfile_reader("plswor.exfile")
-#reader.create_node_coordinates()
-#reader = exfile_reader("heart.exfile")
-#reader.test_interpolation()
-#*
-"""while x1 <= 1:
-				while x2 <= 1:
-					while x3 <= 1:
-						
-						xi = [x1, x2, x3]
-						
-						
-						if (0.5 not in xi):
-							x3 += 0.5
-							continue
-
-						else:
-							print(xi)
-
-							cache.setMeshLocation(element, xi)
-							result, coordinates = field.evaluateReal(cache,3)
-							node = node_set.createNode(counter + 1, node_template)
-							if ([round(elem, 6) for elem in coordinates] in finished):
-								x3 += 0.5
-								print("lol")
-								continue
-							cache.setNode(node)
-							finished.append([round(elem, 6) for elem in coordinates])
-							field.assignReal(cache, coordinates)
-							counter += 1
-							out.write(str(coordinates[0]) + " " + str(coordinates[1] )+ " " + str(coordinates[2]) +'\r\n' )
-
-						x3 += 0.5
-					x2 += 0.5
-					x3 = 0
-				x1 += 0.5
-				x2 = 0
-				x3 = 0
-			x1 = 0
-			x2 = 0
-			x3 = 0
-			element = el_iter.next()
-			ele_field_template = element.getElementfieldtemplate(field,3)
-			basislamda = fieldmodule.createElementbasis(3, 7)#cubic hermite
-			basismu = fieldmodule.createElementbasis(3, 2)#lagrange
-			basistheta = fieldmodule.createElementbasis(3, 2)#decreasing in x1 fehlt
-			
-			for i in range(2,4):
-
-				for j in range(2,4):
-					for k in range(2,4):
-						num_ele += 1
-						ele_template = mesh.createElementtemplate()
-						#new_element = mesh.createElement(num_ele, ele_template)
-						
-						ele_template.setElementShapeType(element.SHAPE_TYPE_CUBE)
-						ele_template.setNumberOfNodes(8)
-						#ele_template.defineField(field,1, ele_field_template)
-
-						local_index = 1
-						node_indexes = []
-						
-						for x1 in range(i-2,i):	#first new element
-							for x2 in range(j-2,j):
-								for x3 in range(k-2,k):
-									xi = [x1/2.0, x2/2.0, x3/2.0]
-									#print(xi)			
-									node_indexes.append(local_index)		
-									cache.setMeshLocation(element, xi)
-									result, coordinates = field.evaluateReal(cache, 3)
-									
-									node = node_set.createNode(counter + 1, node_template)
-									cache.setNode(node)
-									
-									#print(coordinates)
-									field.assignReal(cache, coordinates)
-
-									parameters = field.getNodeParameters(cache, 1,1,1,1 )
-									#print(parameters)
-									counter += 1
-									local_index += 1
-									ele_template.setNode(local_index, node)
-										
-						mesh.defineElement(num_ele, ele_template)
-						ele_template.defineFieldSimpleNodal(field, 1, basislamda, range(1,9))
-						ele_template.defineFieldSimpleNodal(field, 2, basismu, range(1,9))
-						ele_template.defineFieldSimpleNodal(field, 3, basistheta, range(1,9))
-			"""
-
-"""def test_interpolation (self, out_file = "interpolation.exfile", refinement1 = 1, refinement2 = 1, refinement3 = 1):
-		
-		if os.path.isfile("/tmp/" + out_file):
-			os.remove("/tmp/" + out_file)
-		out = open(out_file, "w+")
-		context = Context("heart")
-		region = context.getDefaultRegion()
-		region.readFile(self.in_file)
-			
-		fieldmodule = region.getFieldmodule()
-		field = fieldmodule.findFieldByName("coordinates")
-		field_fibres = fieldmodule.findFieldByName("fibres")
-
-		mesh = fieldmodule.findMeshByDimension(3)
-		
-
-		field = field.castFiniteElement()
-		field_fibres = field_fibres.castFiniteElement()
-		cache = fieldmodule.createFieldcache()
-		node_set = fieldmodule.findNodesetByName("nodes")
-		node_template = node_set.createNodetemplate()
-		node_template.defineField(field)
-		node_template.defineField(field_fibres)
-		node_template.setValueNumberOfVersions(field,  1, 2, 1)#define, that d/ds1, d/ds2, d2/ds1ds2 should be saved in the node lamda
-		node_template.setValueNumberOfVersions(field,  1, 3, 1)#mu
-		node_template.setValueNumberOfVersions(field,  1, 4, 1)#theta
-		node_template.setValueNumberOfVersions(field_fibres,  1, 2, 1)#fibre angle
-		node_template.setValueNumberOfVersions(field_fibres,  3, 2, 1)#sheet angle
-		node_template.setValueNumberOfVersions(field_fibres,  3, 3, 1)
-		node_template.setValueNumberOfVersions(field_fibres,  3, 4, 1)
-
-		node_iter = node_set.createNodeiterator()	#create the node iterator
-		l2 = 1.0/2**refinement2
-		l3 = 1.0/2**refinement3
-		l1 = 1.0/2**refinement1	#length of sides of local cells after refinement
-		
-		counter = 0
-		node1 = node_iter.next()
-		ele_counter = 0
-		num_ele = mesh.getSize()
-		mesh_size = mesh.getSize()
-
-
-		while node1.isValid():
-			counter += 1
-			node1 = node_iter.next()
-		
-		c = 0
-		fieldmodule.beginChange()
-		while c < mesh_size:
-			element = mesh.findElementByIdentifier(c +1)
-			ele_field_template_lamda = element.getElementfieldtemplate(field, 1)
-			ele_field_template_mu = element.getElementfieldtemplate(field, 2)
-			ele_field_template_theta = element.getElementfieldtemplate(field, 3)
-			ele_field_template_fibre = element.getElementfieldtemplate(field_fibres, 1)
-			ele_field_template_imbrication = element.getElementfieldtemplate(field_fibres, 2)
-			ele_field_template_sheet = element.getElementfieldtemplate(field_fibres, 3)
-
-			for i in range(0, 2**refinement1):
-				for j in range(0, 2**refinement2 ):
-					for k in range(0, 2**refinement3 ):
-
-
-
-						node_coordinates = [[0 + i*l1,0 + j*l2,0 + k*l3], [l1 + i*l1 ,0 + j*l2,0 + k*l3],\
-						 [0 + i*l1,l2 + j*l2,0 + k*l3],[l1 + i*l1,l2 + j*l2,0 + k*l3], [0 + i*l1,0 + j*l2,l3 + k*l3],\
-						 [l1 + i*l1,0 + j*l2,l3 + k*l3],\
-						  [0 + i*l1 ,l2 + j*l2,l3 + k*l3],[l1 + i*l1 ,l2 + j*l2,l3 + k*l3]]	
-						node_coordinates = [[0 + i*le,0 + j*le,0 + k*le], [le + i*le ,0 + j*le,0 + k*le],\
-						 [0 + i*le,le + j*le,0 + k*le],[le + i*le,le + j*le,0 + k*le], [0 + i*le,0 + j*le,le + k*le],\
-						 [le + i*le,0 + j*le,le + k*le],\
-						  [0 + i*le ,le + j*le,le + k*le],[le + i*le ,le + j*le,le + k*le]]	
-						print(node_coordinates)
-						for local_coords in node_coordinates:
-							cache.setMeshLocation(element, local_coords)
-							result, global_coords = field.evaluateReal(cache, 3)
-							result, global_angles = field_fibres.evaluateReal(cache, 3)
-							#print(global_coords)
-							node = node_set.createNode(counter + 1, node_template)
-							cache.setNode(node)
-							field.assignReal(cache, global_coords)
-							field_fibres.assignReal(cache, global_angles)
-
-							#test = field.getNodeParameters(cache, 2, 2,1,1)
-							
-							counter += 1
-						Elementbasis = fieldmodule.createElementbasis(2, 1)
-						element_template = mesh.createElementtemplate()
-						element_template.setElementShapeType(element.SHAPE_TYPE_CUBE)
-						element_template.setNumberOfNodes(8)
-						basislamda = fieldmodule.createElementbasis(3, Elementbasis.FUNCTION_TYPE_CUBIC_HERMITE)#cubic hermite
-						basismu = fieldmodule.createElementbasis(3, Elementbasis.FUNCTION_TYPE_LINEAR_LAGRANGE)#lagrange
-						basistheta = fieldmodule.createElementbasis(3, Elementbasis.FUNCTION_TYPE_LINEAR_LAGRANGE)#decreasing in x1 fehlt
-						
-
-						
-						node_indexes = [1,2,3,4,5,6,7,8]
-						#element_template.defineField(field,-1, ele_field_template_lamda)
-						#element_template.defineField(field,2, ele_field_template_mu)
-						#element_template.defineField(field,3, ele_field_template_theta)
-						#element_template.defineField(field_fibres,1, ele_field_template_fibre)
-						#element_template.defineField(field_fibres,2, ele_field_template_imbrication)
-						#element_template.defineField(field_fibres,3, ele_field_template_sheet)
-
-						element_template.defineFieldSimpleNodal(field, 1, basislamda, node_indexes)
-						#
-						element_template.defineFieldSimpleNodal(field, 2, basismu, node_indexes)
-						element_template.defineFieldSimpleNodal(field, 3, basistheta, node_indexes)
-						
-						for z in range(0,8):
-							node = node_set.findNodeByIdentifier(counter -7 +z)
-							element_template.setNode(z + 1, node)
-						
-						
-						mesh.defineElement(num_ele +1,element_template )
-						num_ele += 1
-			print(num_ele)
-			mesh.destroyElement(element)
-			c += 1
-			
-			
-				
-			
-		region.writeFile(out_file)
-		print("done")
-		fieldmodule.endChange()		"""

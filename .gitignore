@@ -1,2 +1,6 @@
 *.pyc
-
+*.vtu
+*.exfile
+*.exnode
+*.exelem
+*.txt

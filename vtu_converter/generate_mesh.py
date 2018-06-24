@@ -5,7 +5,7 @@ import os
 from prolate_spheroidal_to_euclidian import prolate_spheroid_to_euclidian
 
 class mesh_generator:
-	def __init__(self, exfile = "heart.exfile", refinement1 = 1,refinement2 = 1, refinement3 = 1, out_file = "heart_mesh.vtu"):
+	def __init__(self, exfile = "heart.exfile", out_file = "heart_mesh.vtu", refinement1 = 1,refinement2 = 1, refinement3 = 1):
 		self.exfile = exfile
 		self.refinement1 = refinement1
 		self.refinement2 = refinement2
@@ -19,9 +19,9 @@ class mesh_generator:
 		self.refinement2 = y
 		self.refinement3 = z
 	def set_refinement_fibers(self, x,y,z):
-		refinement1_fibers = x
-		refinement2_fibers = y
-		refinement3_fibers = z
+		self.refinement1_fibers = x
+		self.refinement2_fibers = y
+		self.refinement3_fibers = z
 	def set_exfile(self, exfile):
 		self.exfile = exfile
 	def set_outfile(self, out_file):
@@ -32,15 +32,18 @@ class mesh_generator:
 		
 		if (self.refinement1 > 0 or self.refinement2 > 0 or self.refinement3 > 0):
 			ex_reader.kd_interpolation("interpolation.exfile", self.refinement1, self.refinement2, self.refinement3)
-			ex_reader.create_directional_field("fibres.exfile", self.refinement1, self.refinement2, self.refinement3)
+			ex_reader.create_directional_field("fibres.exfile", self.refinement1_fibers, self.refinement2_fibers, self.refinement3_fibers)
 			ex_reader_fibres = exfile_reader.exfile_reader("fibres.exfile")
 			#ex_reader.set_file("interpolation.exfile")
 			ex_reader = exfile_reader.exfile_reader("interpolation.exfile")
+			print("converting exfile...")
 			ex_reader_fibres.create_node_coordinates("fibres_nodes.txt")
 		else:
-			ex_reader.create_directional_field("fibres.exfile", self.refinement1, self.refinement2, self.refinement3)
+			ex_reader.create_directional_field("fibres.exfile", self.refinement1_fibers, self.refinement2_fibers, self.refinement3_fibers)
 			ex_reader_fibres = exfile_reader.exfile_reader("fibres.exfile")
+			print("converting exfile...")
 			ex_reader_fibres.create_node_coordinates("fibres_nodes.txt")
+
 		ex_reader.create_node_coordinates()
 		ex_reader.create_node_connectivity()
 		ex_reader.create_fibre_values()
@@ -56,6 +59,8 @@ class mesh_generator:
 			os.remove(os.path.join(directory, "connectivity.txt"))
 			os.remove(os.path.join(directory, "coordinates_euclidian.txt"))
 			os.remove(os.path.join(directory, "coordinates_prolate_spheroidal.txt"))
-
-mesh_generator = mesh_generator("heart1.exfile", 3,3,2, "heart_332.vtu")#
-mesh_generator.generate_mesh()
+		print("Done.")
+mesh_generator = mesh_generator("heart1.exfile",  "heart_221.vtu")
+mesh_generator.set_refinement_fibers(2,2,0)
+mesh_generator.set_refinement(3,3,3)
+mesh_generator.generate_mesh(True)
