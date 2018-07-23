@@ -57,7 +57,7 @@ class exfile_reader:
 	def get_fiber_values(self, coords, precision):
 		#returns the fiber vector at the specified euclidian coordinates (list like [x,y,z])
 		ps_coords = to_prolate_spheroidal(coords)#convert to prolate spheroidal coordinates
-
+		print(ps_coords)
 		
 		context = Context("heart")
 		region = context.getDefaultRegion()
@@ -303,14 +303,32 @@ class exfile_reader:
 						  [0 + i*l1 ,l2 + j*l2,l3 + k*l3],[l1 + i*l1 ,l2 + j*l2,l3 + k*l3]]"""
 						local_node_coordinates = [[0.5*l1+i*l1, 0.5*l2+j*l2, 0.5*l3+k*l3]]	
 						#local_node_coordinates = [[1*l1+i*l1, 1*l2+j*l2, 1*l3+k*l3]]
-
+                                                #TODO: put this declaration out of loop, maybe do a function flag wether surface or center values are returned...
 
 						#print(local_node_coordinates)
 						#create a new node for every local coordinate
 						
 						for local_coords in local_node_coordinates:
+							#get global angle between local coordinate axes
+							"""cache.setMeshLocation(element, [0.1,0,0])
+							result, xi1 = field.evaluateReal(cache, 3)
+							cache.setMeshLocation(element, [0,0.1,0])
+							result, xi2 = field.evaluateReal(cache, 3)
+
+							xi1 =  to_euclidian(xi1)
+							xi2 = to_euclidian(xi2)
+							scalar = 0
+							xi1_len = 0
+							xi2_len = 0
+							for m in range(0,3):
+								scalar += xi1[m] * xi2[m]
+								xi1_len += xi1[m] * xi1[m]
+								xi2_len += xi2[m] * xi2[m]
+							xi1_len = xi1_len**0.5
+							xi2_len = xi2_len**0.5
 							
-							
+							gamma = math.acos(scalar/(xi2_len*xi1_len))
+							print(gamma)"""
 							linear_basis = fieldmodule.createElementbasis(3, 2)
 							node_indexes = [1,2]
 							#fibre-angle is angle between x1 and x2 axis of local element. add new node to visualize this angle with distance
@@ -328,8 +346,9 @@ class exfile_reader:
 							#if (fibre_angle > 3.1415):
 							#print(fibre_angle)
 							x_angle = local_coords[2]#math.sin(fibre_angle) +  local_coords[2]
-							y_angle =  0.0000001*math.sin(fibre_angle) + local_coords[1]
-							z_angle =  0.0000001*math.cos(fibre_angle) + local_coords[0]
+							#y_angle =  0.00001*math.sin(  gamma -1.57079633 + fibre_angle) + local_coords[1]
+							y_angle =  0.00001*math.sin(fibre_angle) + local_coords[1]
+							z_angle =  0.00001*math.cos(fibre_angle) + local_coords[0]
 							bucket = 0
 							
 							bucket_value = (coord_value - bucket_min)//bucket_interval
@@ -686,6 +705,6 @@ class exfile_reader:
 		#print("done")
 		fieldmodule.endChange()		
 		
-ex_reader = exfile_reader("heart1.exfile")
-values = ex_reader.get_fiber_values([-22.762729289,11.152001135,-39.54201334], 1E-5)
-print (values)
+#ex_reader = exfile_reader("heart1.exfile")
+#values = ex_reader.get_fiber_values([-22.762729289,11.152001135,-39.54201334], 1E-5)
+#print (values)

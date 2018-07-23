@@ -1,0 +1,51 @@
+\begin{thebibliography}{1}
+
+\bibitem{modelling}
+Martin L~Buist Andrew J~Pullan, Leo K~Cheng.
+\newblock {\em Mathematically Modelling the Electrical Activity of the Heart}.
+\newblock Wiley, 2005.
+
+\bibitem{cell}
+Jennifer E.~Fairman Clare~O'Connor, Jill U.~Adams.
+\newblock {\em Essentials of Cell Biology}.
+\newblock Scitable, 2014.
+
+\bibitem{action_potential}
+Hue-Teh Shih.
+\newblock Anatomy of the action potential in the heart.
+\newblock {\em Texas Heart Institute Journal}, 21(1):30--41, 1994.
+
+\bibitem{gap_junction}
+Gülistan Meşe, Gabriele Richard, and Thomas~W. White.
+\newblock Gap junctions: Basic structure and function.
+\newblock {\em Journal of Investigative Dermatology}, 127:2516--2524, 2007.
+
+\bibitem{paper1}
+Ian LeGrice, Peter Hunter, Alistair Young, and Bruce Small.
+\newblock The architecture of the heart: a data-based model.
+\newblock {\em the royal society}, 359, 2001.
+
+\bibitem{paper2}
+P.~M.~F. Nielsen, I.~J.~Le Grice, B.~H. Smaill, and P.~J. Hunter.
+\newblock Mathematical model of geometry and fibrous structure of the heart.
+\newblock {\em American Journal of Physiology-Heart and Circulatory
+  Physiology}, 260:H1365--H1378, 1991.
+
+\bibitem{exfile}
+The ex file format.
+\newblock
+  \url{http://opencmiss.org/documentation/data_format/ex_file_format.html}.
+\newblock Accessed: 2018-07-22.
+
+\bibitem{opencmiss-zinc-getting-started}
+Opencmiss - getting started.
+\newblock \url{http://opencmiss.org/documentation/getting_started_oclibs.html}.
+\newblock Accessed: 2018-07-22.
+
+\bibitem{opencmiss-zinc-api}
+Opencmiss-zinc c++ api documentation.
+\newblock
+  \url{http://opencmiss.org/documentation/apidoc/zinc/latest/index.html}.
+\newblock Accessed: 2018-07-22.
+
+\end{thebibliography}

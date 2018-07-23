@@ -1,0 +1,5 @@
+This is makeindex, version 2.15 [MiKTeX 2.9.6730 64-bit] (kpathsea + Thai support).
+Scanning style file ./template_thesis.ist.............................done (29 attributes redefined, 0 ignored).
+Scanning input file template_thesis.acn...done (0 entries accepted, 0 rejected).
+Nothing written in template_thesis.acr.
+Transcript written in template_thesis.alg.
