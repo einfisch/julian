@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6745 64-bit) (preloaded format=pdflatex 2018.7.18)  23 JUL 2018 02:48
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6745 64-bit) (preloaded format=pdflatex 2018.7.18)  25 JUL 2018 01:44
 entering extended mode
 **./template_thesis.tex
 (template_thesis.tex
@@ -1248,7 +1248,11 @@ Package tocloft Info: The document has chapter divisions on input line 51.
 \cfttabindent=\skip132
 \cfttabnumwidth=\skip133
 )
-(template_thesis.aux)
+(template_thesis.aux
+
+LaTeX Warning: Label `global_gerade_fiber' multiply defined.
+
+)
 \openout1 = `template_thesis.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 253.
@@ -1268,8 +1272,7 @@ LaTeX Font Info:    ... okay on input line 253.
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: hyperref package is loaded.
 Package caption Info: longtable package is loaded.
-
-(C:\Users\julian\AppData\Roaming\MiKTeX\2.9\tex\latex\caption\ltcaption.sty
+ (C:\Users\julian\AppData\Roaming\MiKTeX\2.9\tex\latex\caption\ltcaption.sty
 Package: ltcaption 2013/06/09 v1.4-94 longtable captions (AR)
 )
 Package caption Info: supertabular package is loaded.
@@ -1330,7 +1333,7 @@ most likely cause issues with the appearance of inserted todonotes. The issue c
 an be solved by adding a line like \setlength {\marginparwidth }{2cm} prior to 
 loading the todonotes package. on input line 253.
 
-<Goethe-Logo-blau.pdf, id=46, 771.88374pt x 420.57124pt>
+<Goethe-Logo-blau.pdf, id=50, 771.88374pt x 420.57124pt>
 File: Goethe-Logo-blau.pdf Graphic file (type pdf)
 <use Goethe-Logo-blau.pdf>
 Package pdftex.def Info: Goethe-Logo-blau.pdf  used on input line 262.
@@ -1453,7 +1456,7 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 ]
 chapter 2.
 [17]
-<heart000.png, id=209, 112.92188pt x 117.43875pt>
+<heart000.png, id=214, 112.92188pt x 117.43875pt>
 File: heart000.png Graphic file (type png)
 <use heart000.png>
 Package pdftex.def Info: heart000.png  used on input line 948.
@@ -1509,18 +1512,149 @@ Overfull \hbox (18.1982pt too wide) in paragraph at lines 1131--1135
 [22
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 1207--1225
+Underfull \hbox (badness 10000) in paragraph at lines 1207--1227
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1207--1225
+Underfull \hbox (badness 10000) in paragraph at lines 1207--1227
 
  []
 
-(template_thesis.acr) (template_thesis.bbl [23
+<heart111.png, id=253, 374.90062pt x 401.24907pt>
+File: heart111.png Graphic file (type png)
+<use heart111.png>
+Package pdftex.def Info: heart111.png  used on input line 1232.
+(pdftex.def)             Requested size: 132.92189pt x 142.26378pt.
 
-] [24
+Overfull \hbox (3.176pt too wide) in paragraph at lines 1232--1233
+ [][] 
+ []
+
+
+Underfull \hbox (badness 6741) in paragraph at lines 1233--1233
+[][][]|\OT1/cmr/m/n/10 Eine Ver-feiner-ung pro
+ []
+
+<heart222.png, id=254, 377.91188pt x 403.5075pt>
+File: heart222.png Graphic file (type png)
+<use heart222.png>
+Package pdftex.def Info: heart222.png  used on input line 1238.
+(pdftex.def)             Requested size: 133.2399pt x 142.26378pt.
+
+Overfull \hbox (3.494pt too wide) in paragraph at lines 1238--1239
+ [][] 
+ []
+
+<heart444.png, id=255, 379.4175pt x 402.75468pt>
+File: heart444.png Graphic file (type png)
+<use heart444.png>
+Package pdftex.def Info: heart444.png  used on input line 1244.
+(pdftex.def)             Requested size: 134.01968pt x 142.26378pt.
+
+Overfull \hbox (4.27379pt too wide) in paragraph at lines 1244--1245
+ [][] 
+ []
+
+[23
+
+ <./heart111.png> <./heart222.png> <./heart444.png>]
+<heart111_mesh.png, id=265, 378.66469pt x 403.5075pt>
+File: heart111_mesh.png Graphic file (type png)
+<use heart111_mesh.png>
+Package pdftex.def Info: heart111_mesh.png  used on input line 1257.
+(pdftex.def)             Requested size: 133.50531pt x 142.26378pt.
+
+Overfull \hbox (3.75941pt too wide) in paragraph at lines 1257--1258
+ [][] 
+ []
+
+
+Underfull \hbox (badness 6741) in paragraph at lines 1258--1258
+[][][]|\OT1/cmr/m/n/10 Eine Ver-feiner-ung pro
+ []
+
+<heart222_mesh.png, id=266, 380.17032pt x 402.00188pt>
+File: heart222_mesh.png Graphic file (type png)
+<use heart222_mesh.png>
+Package pdftex.def Info: heart222_mesh.png  used on input line 1263.
+(pdftex.def)             Requested size: 134.53503pt x 142.26378pt.
+
+Overfull \hbox (4.78914pt too wide) in paragraph at lines 1263--1264
+ [][] 
+ []
+
+<heart444_mesh.png, id=267, 377.91188pt x 403.5075pt>
+File: heart444_mesh.png Graphic file (type png)
+<use heart444_mesh.png>
+Package pdftex.def Info: heart444_mesh.png  used on input line 1269.
+(pdftex.def)             Requested size: 133.2399pt x 142.26378pt.
+
+Overfull \hbox (3.494pt too wide) in paragraph at lines 1269--1270
+ [][] 
+ []
+
+
+Overfull \hbox (40.80606pt too wide) in paragraph at lines 1387--1388
+ [][] 
+ []
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Underfull \hbox (badness 1371) in paragraph at lines 1468--1468
+[][][]|\OT1/cmr/m/n/10.95 Bei Be-trach-tung eines verzer-rten Ele-ments wird de
+ut-lich, warum $\OML/cmm/m/it/10.95 v[]$
+ []
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[24
+
+ <./heart111_mesh.png> <./heart222_mesh.png> <./heart444_mesh.png>] [25]
+<fibers_200_1.png, id=290, 572.1375pt x 606.01407pt>
+File: fibers_200_1.png Graphic file (type png)
+<use fibers_200_1.png>
+Package pdftex.def Info: fibers_200_1.png  used on input line 1504.
+(pdftex.def)             Requested size: 134.31264pt x 142.26378pt.
+<fibers_200_2.png, id=291, 563.85657pt x 597.73312pt>
+File: fibers_200_2.png Graphic file (type png)
+<use fibers_200_2.png>
+Package pdftex.def Info: fibers_200_2.png  used on input line 1510.
+(pdftex.def)             Requested size: 134.20125pt x 142.26378pt.
+
+Overfull \hbox (7.29999pt too wide) in paragraph at lines 1502--1513
+[][]   [] 
+ []
+
+<fibers_200_1_surface.png, id=292, 551.05875pt x 621.82312pt>
+File: fibers_200_1_surface.png Graphic file (type png)
+<use fibers_200_1_surface.png>
+Package pdftex.def Info: fibers_200_1_surface.png  used on input line 1524.
+(pdftex.def)             Requested size: 126.06816pt x 142.26378pt.
+<fibers_200_2_surface.png, id=293, 562.35094pt x 594.72188pt>
+File: fibers_200_2_surface.png Graphic file (type png)
+<use fibers_200_2_surface.png>
+Package pdftex.def Info: fibers_200_2_surface.png  used on input line 1530.
+(pdftex.def)             Requested size: 134.51219pt x 142.26378pt.
+
+Overfull \hbox (7.29999pt too wide) in paragraph at lines 1522--1533
+[][]   [] 
+ []
+
+<fibers_200_2_surface_center.png, id=294, 542.77782pt x 571.38469pt>
+File: fibers_200_2_surface_center.png Graphic file (type png)
+<use fibers_200_2_surface_center.png>
+Package pdftex.def Info: fibers_200_2_surface_center.png  used on input line 15
+42.
+(pdftex.def)             Requested size: 135.1392pt x 142.26378pt.
+[26
+
+ <./fibers_200_1.png> <./fibers_200_2.png>] (template_thesis.acr)
+(template_thesis.bbl [27 <./fibers_200_1_surface.png> <./fibers_200_2_surface.p
+ng> <./fibers_200_2_surface_center.png>] [28
 
 ]
 chapter without number
@@ -1530,7 +1664,7 @@ Underfull \hbox (badness 1546) in paragraph at lines 41--44
 p : / / opencmiss . org / documentation / getting _
  []
 
-) [25
+) [29
 runsystem(makeindex -s template_thesis.ist -t template_thesis.glg -o template_t
 hesis.gls template_thesis.glo)...executed (allowed).
 
@@ -1538,22 +1672,26 @@ runsystem(makeindex -s template_thesis.ist -t template_thesis.alg -o template_t
 hesis.acr template_thesis.acn)...executed (allowed).
 
 ]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1271.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1271.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1588.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1588.
  (template_thesis.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1271.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1271.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1588.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1588.
 
 Package rerunfilecheck Info: File `template_thesis.out' has not changed.
-(rerunfilecheck)             Checksum: 8CC056C7B3717C94FC69AFD38F237A59;642.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1271.
+(rerunfilecheck)             Checksum: 0B2B0EAA766EA776FD0EBD8C74DCC394;725.
+
+
+LaTeX Warning: There were multiply-defined labels.
+
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1588.
  ) 
 Here is how much of TeX's memory you used:
- 36977 strings out of 492973
- 830450 string characters out of 3139037
- 1165994 words of memory out of 3000000
- 40111 multiletter control sequences out of 15000+200000
- 19098 words of font info for 73 fonts, out of 3000000 for 9000
+ 37250 strings out of 492973
+ 835374 string characters out of 3139037
+ 1185272 words of memory out of 3000000
+ 40358 multiletter control sequences out of 15000+200000
+ 19406 words of font info for 74 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
  73i,16n,103p,9096b,1197s stack positions out of 5000i,500n,10000p,200000b,50000s
 <D:/ProgrammeD/miktex/fonts/type1/public/amsfonts/cm/cmbx10.pfb><D:/Programme
@@ -1572,9 +1710,9 @@ nts/cm/cmssbx10.pfb><D:/ProgrammeD/miktex/fonts/type1/public/amsfonts/cm/cmsy10
 meD/miktex/fonts/type1/public/amsfonts/cm/cmsy8.pfb><D:/ProgrammeD/miktex/fonts
 /type1/public/amsfonts/cm/cmti10.pfb><D:/ProgrammeD/miktex/fonts/type1/public/a
 msfonts/cm/cmtt10.pfb>
-Output written on template_thesis.pdf (25 pages, 346981 bytes).
+Output written on template_thesis.pdf (29 pages, 1431152 bytes).
 PDF statistics:
- 341 PDF objects out of 1000 (max. 8388607)
- 70 named destinations out of 1000 (max. 500000)
- 103 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 409 PDF objects out of 1000 (max. 8388607)
+ 85 named destinations out of 1000 (max. 500000)
+ 166 words of extra memory for PDF output out of 10000 (max. 10000000)
 

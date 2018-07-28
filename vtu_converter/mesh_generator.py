@@ -14,6 +14,12 @@ class mesh_generator:
 		self.refinement2_fibers = refinement2
 		self.refinement3_fibers = refinement3
 		self.out_file = out_file
+		self.surface = False
+		self.fiber_length = 3
+	def set_fiber_length(self, fiber_length):
+		self.fiber_length = fiber_length
+	def set_fibers_surface(self, surface):
+		self.surface = surface
 	def set_refinement(self, x,y,z):
 		self.refinement1 = x
 		self.refinement2 = y
@@ -34,14 +40,14 @@ class mesh_generator:
 		
 		if (self.refinement1 > 0 or self.refinement2 > 0 or self.refinement3 > 0):
 			ex_reader.kd_interpolation("interpolation.exfile", self.refinement1, self.refinement2, self.refinement3)
-			ex_reader.create_directional_field("fibres.exfile", self.refinement1_fibers, self.refinement2_fibers, self.refinement3_fibers)
+			ex_reader.create_directional_field("fibres.exfile", self.refinement1_fibers, self.refinement2_fibers, self.refinement3_fibers, self.surface)
 			ex_reader_fibres = exfile_reader.exfile_reader("fibres.exfile")
 			#ex_reader.set_file("interpolation.exfile")
 			ex_reader = exfile_reader.exfile_reader("interpolation.exfile")
 			print("converting exfile...")
 			ex_reader_fibres.create_node_coordinates("fibres_nodes.txt")
 		else:
-			ex_reader.create_directional_field("fibres.exfile", self.refinement1_fibers, self.refinement2_fibers, self.refinement3_fibers)
+			ex_reader.create_directional_field("fibres.exfile", self.refinement1_fibers, self.refinement2_fibers, self.refinement3_fibers, self.surface)
 			ex_reader_fibres = exfile_reader.exfile_reader("fibres.exfile")
 			print("converting exfile...")
 			ex_reader_fibres.create_node_coordinates("fibres_nodes.txt")
@@ -53,7 +59,7 @@ class mesh_generator:
 		prolate_spheroid_to_euclidian("fibres_nodes.txt", "fibres_nodes_euclidian.txt", 0.3525E+02)
 		coords = "coordinates_euclidian.txt"
 		cons = "connectivity.txt"
-		vtu_conv.write_directional_field( "fibres_nodes_euclidian.txt",self.out_file_fibers, 3)
+		vtu_conv.fibers_to_vtu( "fibres_nodes_euclidian.txt",self.out_file_fibers, self.fiber_length)
 
 		vtu_conv.heart_to_vtu(cons, coords, self.out_file)
 		if (delete_data == True):

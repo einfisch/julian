@@ -73,16 +73,39 @@ void get_fiber_values(double coords[], double precision, double out_values[]){
 
 	double local_node_coordinates[3] = {x, y, z};
 	Element element = ele_iter.next();
-
+	std::cout << ele_iter.isValid() << std::endl;
 	while(element.isValid()){
-
+		//std::cout<<element_index<<std::endl;
+		local_node_coordinates[0] = 0.5;
+		local_node_coordinates[1] = 0.5;
+		local_node_coordinates[2] = 0.5;
 		cache.setMeshLocation(element, 3,  local_node_coordinates);
 		field.evaluateReal(cache, 3, out_values);
 		d = distance(out_values, ps_coords);
 		if(d < minimum){
 			minimum = d;
 			element_index = element.getIdentifier();
-		}
+			//std::cout<<element_index<<std::endl;
+			}	
+		for(double i = 0.05; i < 1; i+=0.9){
+			for(double j = 0.05; j < 1; j+= 0.9){
+				for(double k = 0.05; k < 1; k+= 0.9){
+					local_node_coordinates[0] = i;
+					local_node_coordinates[1] = j;
+					local_node_coordinates[2] = k;
+					cache.setMeshLocation(element, 3,  local_node_coordinates);
+					field.evaluateReal(cache, 3, out_values);
+					d = distance(out_values, ps_coords);
+					if(d < minimum){
+						minimum = d;
+						element_index = element.getIdentifier();
+						//std::cout<<element_index<<std::endl;
+					}
+								
+					}
+				}
+			}
+		
 		element = ele_iter.next();
 	}
 
@@ -103,14 +126,172 @@ void get_fiber_values(double coords[], double precision, double out_values[]){
 	double x1;
 	double y1;
 	double z1;
-	while((d > precision) && (refinement < 50)){
+	minimum=1000;
+	
+	while((d > precision) && (refinement < 20)){
+		
 		for (int i = -1; i <=1; i = i+2){
 			for (int j = -1; j <= 1; j = j+2){
 				for (int k = -1; k <= 1; k = k+2){
+					
+
+					x1 = x + i * std::pow(0.5,refinement) - std::pow(0.495,refinement);
+					y1 = y + j * std::pow(0.5,refinement) - std::pow(0.495,refinement);
+					z1 = z + k * std::pow(0.5,refinement)- std::pow(0.495,refinement);
+					//std::cout << x1 << " " << y1 << " " << z1 << " " << std::endl;
+					local_node_coordinates[0] = x1;
+					local_node_coordinates[1] = y1;
+					local_node_coordinates[2] = z1;
+
+					cache.setMeshLocation(element, 3, local_node_coordinates);
+					field.evaluateReal(cache, 3, out_values);
+					d = distance(out_values, ps_coords);
+
+					if (d < minimum){
+						
+						minimum = d;
+						x_min = x1;// + i * std::pow(0.5,refinement);
+						y_min = y1;// + j * std::pow(0.5,refinement);
+						z_min = z1;// + k * std::pow(0.5,refinement);
+					}
+					x1 = x + i * std::pow(0.5,refinement) + std::pow(0.495,refinement);
+					y1 = y + j * std::pow(0.5,refinement) - std::pow(0.495,refinement);
+					z1 = z + k * std::pow(0.5,refinement)- std::pow(0.495,refinement);
+					//std::cout << x1 << " " << y1 << " " << z1 << " " << std::endl;
+					local_node_coordinates[0] = x1;
+					local_node_coordinates[1] = y1;
+					local_node_coordinates[2] = z1;
+
+					cache.setMeshLocation(element, 3, local_node_coordinates);
+					field.evaluateReal(cache, 3, out_values);
+					d = distance(out_values, ps_coords);
+
+					if (d < minimum){
+						
+						minimum = d;
+						x_min = x1;// + i * std::pow(0.5,refinement);
+						y_min = y1;// + j * std::pow(0.5,refinement);
+						z_min = z1;// + k * std::pow(0.5,refinement);
+					}
+					x1 = x + i * std::pow(0.5,refinement) - std::pow(0.495,refinement);
+					y1 = y + j * std::pow(0.5,refinement) + std::pow(0.495,refinement);
+					z1 = z + k * std::pow(0.5,refinement)- std::pow(0.495,refinement);
+					//std::cout << x1 << " " << y1 << " " << z1 << " " << std::endl;
+					local_node_coordinates[0] = x1;
+					local_node_coordinates[1] = y1;
+					local_node_coordinates[2] = z1;
+
+					cache.setMeshLocation(element, 3, local_node_coordinates);
+					field.evaluateReal(cache, 3, out_values);
+					d = distance(out_values, ps_coords);
+
+					if (d < minimum){
+						
+						minimum = d;
+						x_min = x1;// + i * std::pow(0.5,refinement);
+						y_min = y1;// + j * std::pow(0.5,refinement);
+						z_min = z1;// + k * std::pow(0.5,refinement);
+					}
+					x1 = x + i * std::pow(0.5,refinement) + std::pow(0.495,refinement);
+					y1 = y + j * std::pow(0.5,refinement) + std::pow(0.495,refinement);
+					z1 = z + k * std::pow(0.5,refinement)- std::pow(0.495,refinement);
+					//std::cout << x1 << " " << y1 << " " << z1 << " " << std::endl;
+					local_node_coordinates[0] = x1;
+					local_node_coordinates[1] = y1;
+					local_node_coordinates[2] = z1;
+
+					cache.setMeshLocation(element, 3, local_node_coordinates);
+					field.evaluateReal(cache, 3, out_values);
+					d = distance(out_values, ps_coords);
+
+					if (d < minimum){
+						
+						minimum = d;
+						x_min = x1;// + i * std::pow(0.5,refinement);
+						y_min = y1;// + j * std::pow(0.5,refinement);
+						z_min = z1;// + k * std::pow(0.5,refinement);
+					}
+					x1 = x + i * std::pow(0.5,refinement) - std::pow(0.495,refinement);
+					y1 = y + j * std::pow(0.5,refinement) - std::pow(0.495,refinement);
+					z1 = z + k * std::pow(0.5,refinement)+ std::pow(0.495,refinement);
+					//std::cout << x1 << " " << y1 << " " << z1 << " " << std::endl;
+					local_node_coordinates[0] = x1;
+					local_node_coordinates[1] = y1;
+					local_node_coordinates[2] = z1;
+
+					cache.setMeshLocation(element, 3, local_node_coordinates);
+					field.evaluateReal(cache, 3, out_values);
+					d = distance(out_values, ps_coords);
+
+					if (d < minimum){
+						
+						minimum = d;
+						x_min = x1;// + i * std::pow(0.5,refinement);
+						y_min = y1;// + j * std::pow(0.5,refinement);
+						z_min = z1;// + k * std::pow(0.5,refinement);
+					}
+					x1 = x + i * std::pow(0.5,refinement) + std::pow(0.495,refinement);
+					y1 = y + j * std::pow(0.5,refinement) - std::pow(0.495,refinement);
+					z1 = z + k * std::pow(0.5,refinement)+ std::pow(0.495,refinement);
+					//std::cout << x1 << " " << y1 << " " << z1 << " " << std::endl;
+					local_node_coordinates[0] = x1;
+					local_node_coordinates[1] = y1;
+					local_node_coordinates[2] = z1;
+
+					cache.setMeshLocation(element, 3, local_node_coordinates);
+					field.evaluateReal(cache, 3, out_values);
+					d = distance(out_values, ps_coords);
+
+					if (d < minimum){
+						
+						minimum = d;
+						x_min = x1;// + i * std::pow(0.5,refinement);
+						y_min = y1;// + j * std::pow(0.5,refinement);
+						z_min = z1;// + k * std::pow(0.5,refinement);
+					}
+					x1 = x + i * std::pow(0.5,refinement) - std::pow(0.495,refinement);
+					y1 = y + j * std::pow(0.5,refinement) + std::pow(0.495,refinement);
+					z1 = z + k * std::pow(0.5,refinement)+ std::pow(0.495,refinement);
+					//std::cout << x1 << " " << y1 << " " << z1 << " " << std::endl;
+					local_node_coordinates[0] = x1;
+					local_node_coordinates[1] = y1;
+					local_node_coordinates[2] = z1;
+
+					cache.setMeshLocation(element, 3, local_node_coordinates);
+					field.evaluateReal(cache, 3, out_values);
+					d = distance(out_values, ps_coords);
+
+					if (d < minimum){
+						
+						minimum = d;
+						x_min = x1;// + i * std::pow(0.5,refinement);
+						y_min = y1;// + j * std::pow(0.5,refinement);
+						z_min = z1;// + k * std::pow(0.5,refinement);
+					}
+					x1 = x + i * std::pow(0.5,refinement) + std::pow(0.495,refinement);
+					y1 = y + j * std::pow(0.5,refinement) + std::pow(0.495,refinement);
+					z1 = z + k * std::pow(0.5,refinement)+ std::pow(0.495,refinement);
+					//std::cout << x1 << " " << y1 << " " << z1 << " " << std::endl;
+					local_node_coordinates[0] = x1;
+					local_node_coordinates[1] = y1;
+					local_node_coordinates[2] = z1;
+
+					cache.setMeshLocation(element, 3, local_node_coordinates);
+					field.evaluateReal(cache, 3, out_values);
+					std::cout << field.evaluateReal(cache, 3, out_values) << std::endl;
+					d = distance(out_values, ps_coords);
+
+					if (d < minimum){
+						
+						minimum = d;
+						x_min = x1;// + i * std::pow(0.5,refinement);
+						y_min = y1;// + j * std::pow(0.5,refinement);
+						z_min = z1;// + k * std::pow(0.5,refinement);
+					}
 					x1 = x + i * std::pow(0.5,refinement);
 					y1 = y + j * std::pow(0.5,refinement);
 					z1 = z + k * std::pow(0.5,refinement);
-
+					//std::cout << x1 << " " << y1 << " " << z1 << " " << std::endl;
 					local_node_coordinates[0] = x1;
 					local_node_coordinates[1] = y1;
 					local_node_coordinates[2] = z1;
@@ -125,34 +306,57 @@ void get_fiber_values(double coords[], double precision, double out_values[]){
 						x_min = x1;
 						y_min = y1;
 						z_min = z1;
-					}
-
-				}
+					}					
+				}		
 			}
 		}
-	x = x_min;
-	y = y_min;
-	z = z_min;
-	std::cout << x << " " << y << " " << z << " " << std::endl;
-	refinement += 1;	
+	
+		x = x_min;	
+		y = y_min;
+		z = z_min;
+		
+
+	//std::cout << x << " " << y << " " << z << " " << std::endl;
+	//std::cout << d << std::endl;
+	refinement += 1;
+	//if(refinement==50){std::cout << "get_fiber_values does not converge" << std::endl;}	
 	}
 	local_node_coordinates[0] = x;
 	local_node_coordinates[1] = y;
 	local_node_coordinates[2] = z;
 	cache.setMeshLocation(element, 3, local_node_coordinates);
+
 	field_fibers.evaluateReal(cache, 3, out_values);
-	field.evaluateReal(cache, 3, coords);//TEST
+	double fiber_angle = out_values[0];
+	double slope = std::tan(fiber_angle);
+	d = 0.0001*std::cos(fiber_angle);
+	local_node_coordinates[0] +=  d;
+	local_node_coordinates[1] += slope*d;
+	//local_node_coordinates[2] = z;
+	cache.setMeshLocation(element, 3, local_node_coordinates);
+	field.evaluateReal(cache, 3, ps_coords);//TEST
+	to_euclidian(ps_coords, out_values);
+	ps_coords[0] = coords[0] - out_values[0]; //directional vector of the fiber angle
+	ps_coords[1] = coords[1] - out_values[1];
+	ps_coords[2] = coords[2] - out_values[2];
+	//calculate length of directional vector to norm the length of the resulting edge to 1.
+	x = 1.0/(std::sqrt(ps_coords[0]*ps_coords[0] + ps_coords[1]*ps_coords[1] + ps_coords[2]*ps_coords[2]));
+	out_values[0] = x*ps_coords[0];
+	out_values[1] = x*ps_coords[1];
+	out_values[2] = x*ps_coords[2];
 	std::cout << "distance: " << distance(coords, ps_coords) << std::endl;
 }
+
 int main(){
 
     
 	double out_values[3];
-	double coords[3] = {-22.762729289,11.152001135,-39.54201334};
+	double coords[3] = {46.115402368,17.578439212,-1.537914154};
+	//double coords[3] = {12.583235655,-25.383915883,17.658198493};
 	double precision = 0.00001;
     get_fiber_values(coords, precision, out_values);
     std::cout << "result:  " << out_values[0] << " " << out_values[1]<< " " << out_values[2] << std::endl << std::endl;
-
+    std::cout << "test:  "<< std::endl;
     return 0;
 }
 

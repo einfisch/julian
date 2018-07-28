@@ -11,4 +11,5 @@
 \contentsline {section}{\numberline {2.2}EX File Format und OpenCMISS Zinc}{19}{section.2.2}
 \contentsline {chapter}{\numberline {3}Praktischer Teil}{21}{chapter.3}
 \contentsline {section}{\numberline {3.1}Generieren feiner Gitter}{21}{section.3.1}
-\contentsline {chapter}{\nonumberline Bibliography}{25}{chapter*.16}
+\contentsline {section}{\numberline {3.2}Visualisierung des Herzmuskelfasern}{24}{section.3.2}
+\contentsline {chapter}{\nonumberline Bibliography}{29}{chapter*.23}

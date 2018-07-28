@@ -1032,9 +1032,9 @@
 	 Möglichkeit über verschiedene \verb!set!- Funktionen die Anzahl der Verfeinerungen in die drei Raumrichtungen
 	 für das Herz und die Muskelfasern zu bestimmen, sowie die Namen der verwendeten Dateien zu ändern.
 	  \\Der \verb!mesh_generator.set_refinement(v,h,r)! Befehl
-	 nimmt drei Integer $\geq$ 0 entgegen, und setzt die Verfeinerung auf $v$- mal in vertikale Richtung,
-	  $h$- mal in
-	 horizontale Richtung und $r$- mal in radiale Richtung. \\(Analoges gilt für die 
+	 nimmt drei Integer $\geq$ 0 entgegen, und setzt die Anzahl der Verfeinerungen auf $v$ in vertikaler Richtung,
+	  $h$ in
+	 horizontaler Richtung und $r$ in radialer Richtung. \\(Analoges gilt für die 
 	 \verb! mesh_generator.set_refinement_fibers(v,h,r))! -Funktion.)\\
 	 Die Verfeinerung beruht auf dem Prinzip, dass aus einem gegebenen Element neue Knoten über Interpolation
 	 generiert werden, welche wiederum neue Elemente bilden. Da jedes Element auf ein lokales, orthonormales
@@ -1221,23 +1221,340 @@
 	 Für den Fall dass der Wert eines Knotens nahe einer Intervallgrenze eines Behälters liegt und 
 	 Rundungsfehler nicht
 	 ausgeschlossen werden können, wird  in der Vereinigung des Behälters mit seinen beiden benachbarten
-	 Behältern gesucht.\\
+	 Behältern gesucht.\\\\
+	 Das Ergebnis der Verfeinerung des Herzgitters ist in \autoref{figure:refinement} und 
+	 \autoref{figure:refinement_mesh} zu sehen:
+	 
+	\begin{figure}[h!]
+	
+	\begin{subfigure}[t]{0.3\textwidth}
+		\centering
+		\includegraphics[height=5cm]{heart111.png}
+		\caption{Eine Verfeinerung pro Raumrichtung}
+	\end{subfigure}
+	~
+	\begin{subfigure}[t]{0.3\textwidth}
+		\centering
+		\includegraphics[height=5cm]{heart222.png}
+		\caption{Zwei Verfeinerungen pro Raumrichtung}
+	\end{subfigure}
+	~
+		\begin{subfigure}[t]{0.3\textwidth}
+		\centering
+		\includegraphics[height=5cm]{heart444.png}
+		\caption{Vier Verfeinerungen pro Raumrichtung}
+	\end{subfigure}
+	
+	\caption{Darstellung des Modell des Herzens in unterschiedlichen Verfeinerungsstufen.  }
+		
+	\label{figure:refinement}
+	\end{figure}
+	\clearpage
+		\begin{figure}[t]
+	
+	\begin{subfigure}[t]{0.3\textwidth}
+		\centering
+		\includegraphics[height=5cm]{heart111_mesh.png}%
+		\caption{Eine Verfeinerung pro Raumrichtung}
+	\end{subfigure}
+	~
+	\begin{subfigure}[t]{0.3\textwidth}
+		\centering
+		\includegraphics[height=5cm]{heart222_mesh.png}%
+		\caption{Zwei Verfeinerungen pro Raumrichtung}
+	\end{subfigure}
+	~
+		\begin{subfigure}[t]{0.3\textwidth}
+		\centering
+		\includegraphics[height=5cm]{heart444_mesh.png}
+		\caption{Vier Verfeinerungen pro Raumrichtung}
+	\end{subfigure}
+	
+	\caption{Alternative Darstellung von \autoref{figure:refinement} , wobei die dem Betrachter zugewandte 
+	Oberfläche durch ein Gitter ersetzt wird.}
+		
+	\label{figure:refinement_mesh}
+	\end{figure}
 
+	\section{Visualisierung des Herzmuskelfasern}
+	
+	Für eine anschauliche Evaluation der Rechenergebnisse ist es von Vorteil, die Richtung der Muskelfasern
+	im Modell des Herzens graphisch darzustellen, denn in diese Richtungen ist eine erhöhte Leitfähigkeit
+	und somit schnellere Ausbreitung eines elektrischen Signals zu erwarten. Bekannt ist, dass die Richtung
+	der Herzmuskelfasern als Winkel zwischen der $\xi_1$- Achse des lokalen Koordinatensystems und dem 
+	Faservektor $f$ gegeben ist. $f$ ist hierbei ein Vektor, welcher im auszuwertenden Punkt in Richtung
+	der dort verlaufenden Herzmuskelfasern verläuft.\\
+	Um an einem beliebigen Punkt $v = (\xi_1,\xi_2,\xi_3)$ in einem Element den Verlauf der Herzmuskelfasern
+	 darzustellen,
+	 wird wie folgt vorgegangen:\\
+	Zunächst wird mittels Interpolation der Faserwinkel $\eta$ an diesem Punkt, sowie dessen globale
+	Koordinaten bestimmt. Anschließend wird im lokalen Koordinatensystem eine Gerade $g_{\xi_1,\xi_2,\xi_3}$
+	 erzeugt,
+	 welche $\eta$ als Steigungswinkel bezüglich der $\xi_1$
+	Achse hat und in einer zur $(\xi_1,\xi_2)$- Ebene parallelen Ebene liegt. Die Geradengleichung ist somit
+	 definiert durch:
+	\begin{equation}
+	\vec g_{\xi_1,\xi_2,\xi_3} =a \cdot  \left(\begin{array}{c}1\\\ \tan(\eta) \\\ 0 \end{array}\right) +
+	 \left(\begin{array}{c}\xi_1\\\ \xi_2\\\ \xi_3\end{array}\right)
+	 \label{eq:gerade_fiber}
+	\end{equation}
+	wobei $a$ ein Parameter ist.\\
+	Auf $\vec g_{\xi_1,\xi_2,\xi_3}$ wird nun ein Punkt $v_{\text{neu}}$ generiert, welcher möglichst nah an $v$
+	liegen soll (siehe \autoref{figure:fiber_new_node}). Da die einzelnen Elemente des Herzmodells
+	 im Allgemeinen verzerrt sind, 
+	 kann sonst nicht garantiert werden, dass  Die Richtung der Muskelfasern in $v$ hinreichend gut
+	approximiert werden (siehe \autoref{figure:distance_v_vnew}). 
+	
+	 %Von $v_{\text{neu}}$ werden ebenfalls die globalen Koordinaten ausgegeben.
+	\begin{figure}[h]
+	\centering
+	
+	\begin{tikzpicture}
+	
+			\node[label=above:$\xi_3$] (xi3) at (-1.1,-1.5){};
+			\node[label=below:$\xi_1$] (xi1) at (3,0) {};
+			\node[label=left:$\xi_2$] (xi2) at (0,3) {};
+			\node[label=above:$g_v$] (f) at (3,2) {};
+			\node[label=above:$v$] (v) at (1,1) {$\circ$};
+			\draw[->] (0,0) -- (xi1);
+			\draw[blue] (-1,0) -- (f);
+			\draw[->] (0,0) -- (xi2);
+			\draw[->] (0,0) -- (xi3); 
+			\node[label=right:$\eta$] (eta) at (2, 1.225) {};
+			\draw (2,1) to[bend right=70] (1.9, 1.45);
+			\draw[dashed] (-0.4,1)--(3,1);
+			\draw[dashed] (v) -- (1,-0.5);
+			\draw[dashed] (1,-0.5) -- (1.28,0);
+			\draw[dashed] (1,-0.5) -- (-0.4,-0.5);
+			\draw[dashed] (-0.4,1) -- (0,1.55);
+			
+			\draw[dotted, gray] (1.5,1.2) circle (30pt);
+			
+			\draw[->] (2,2.15) to [bend left=60] (5,3);
+			
+			\node[label=above:$\xi_3'$] (xi33) at (5.1,-1.5){};
+			\node[label=below:$\xi_1'$] (xi11) at (9,0) {};
+			\node[label=left:$\xi_2'$] (xi22) at (6,3) {};
+			\draw[->,dashed] (6,0) -- (xi11);
+			%\draw[blue] (-1,0) -- (f);
+			\draw[->,dashed] (6,0) -- (xi22);
+			\draw[->,dashed] (6,0) -- (xi33); 
+			\node[label=left:$v$] (v') at (6,0) {$\bullet$};
+			\node[label=above:$v_{neu}$] (vneu) at (8,1) {$\circ$};
+			\draw[blue] (5,-0.5) -- (9,1.5);
+			\node[label=above:$g_v$] (f') at (9,1.5) {};
+			
+			\node[label=right:$\eta$] (eta') at (7, 0.225) {};
+			\draw (7,0) to[bend right=70] (6.9, 0.45);
+			\draw[decoration={brace,raise=5pt},decorate](6,0) -- node[below=6pt] {} (8,1);
+			\node[label={[rotate=22.5]above:$d$}] at (6.9,0.6) {};
+			
+			
+			\node[label=above:$y$] (xi333) at (11.1,-1.5){};
+			\node[label=below:$x$] (xi111) at (15,0) {};
+			\node[label=left:$z$] (xi222) at (12,3) {};
+			
+			\draw (12,0) -- (12.255,0);
+			\draw[->] (14,0) -- (xi111);
+			%\draw[blue] (-1,0) -- (f);
+			\draw[->] (12,0) -- (xi222);
+			\draw[->] (12,0) -- (xi333); 
+			
+			
+			\draw (12.25,2) to [out=-20, in=-140](14,2);
+			\draw (12.25,2) to [out=-100, in=100](12.35,-0.5);
+			\draw (12.35,-0.5) to [out=-25, in=-150](13.9,-0.5);
+			\draw (13.9,-0.5) to [out=80, in=-80](14,2);
+			
+			\draw[gray,dashed] (12.25,2) to [out=-20, in=-140](14,0.5);
+			\draw[gray,dashed] (12.25,1.5) to [out=-20, in=-140](14,0.25);
+			\draw[gray,dashed] (12.25,1) to [out=-20, in=-140](14,0);
+			\draw[gray,dashed] (12.25,0.5) to [out=-20, in=-140](14,-0.25);
+			\draw[gray,dashed] (12.25,0) to [out=-20, in=-140](13.9,-0.45);
+			\draw[gray,dashed] (13,1.75) to [out=-45, in=-150](14,0.755);
+			\draw[gray,dashed] (13.5,1.7) to [out=-60, in=-155](14.1,1);
+			\draw[gray,dashed] (13.8,1.8) to [out=-60, in=135](14.1,1.25);
+			\draw[gray,dashed] (12.35,-0.35) to [out=-30, in=170](13.2,-0.7);
+			
+			\node[thick,label=below:$v$] (v11) at (13.48,0.5) {$\cdot$};
+			\node[thick] (v111) at (13.48,0.5) {$\circ$};
+			\node[thick] (vneu11) at (13.33,0.7) {$\cdot$};
+			\draw[thick] (13.48,0.5) -- (13.33,0.7);
+			% \draw (a1) to (c1);
+	 		%\draw (c1) to [out=230, in=100](d1);
+	 		%\draw (b1) to (d1);
+			\draw[->] (8,3) to [bend left=60] (11,3);
+	\end{tikzpicture}
+	
+	\caption{Für Knoten $v$ mit lokalen Koordinaten$ (\xi_1^v, \xi_2^v, \xi_3^v)$ soll die Richtung der 
+	Herzmuskelfasern approximiert werden. Es wird die Gerade $g_v$ erstellt (siehe \autoref{eq:gerade_fiber} )
+	anhand der ein neuer Knoten $v_{\text{neu}}$ generiert wird. Die globalen Koordinaten von $v$ und
+	$v_{\text{neu}}$ spannen eine weiterer Gerade im globalen Koordinatensystem auf. Eine Kante zwischen einem
+	beliebigen Knoten der globalen Gerade und $v$ bilden die Visualisierung der Muskelfaserrichtung in $v$.
+	In der rechten Abbildung ist dies verdeutlicht. Dabei beschreiben die gestrichelten Linien den Verlauf
+	der Muskelfasern. Die Kante von $v$ ausgehend nähert eine Tangente an den Verlauf der Muskelfasern in
+	Punkt $v$ an. }
+	\label{figure:fiber_new_node}
+	\end{figure}
+	\begin{figure}[h]
+	\centering
+	\begin{tikzpicture}
+	 \node[label=below:$\xi_1$] (xi12) at (11,0) {};
+	 \node[label=left:$\xi_2$] (xi22) at (8,3) {};
+	 \draw[->] (8,0) -- (xi12);
+	 \draw[->] (8,0) -- (xi22);
+	 \node[label=below:${}$] (12) at (8,0) {${}$};
+	 \node[label=below:${}$] (22) at (10,0) {${}$};
+	 \node[label=below:${}$] (32) at (8,2) {${}$};
+	 \node[label=below:${}$] (42) at (10,2) {${}$};
+	 
+	 \draw (10,0) to (10,2);
+	 \draw (10,2) to (8,2);
+	 
+	 \node[red,label=below:${}$] (i1) at (8+1,0) {${}$};
+	 \node[red,label=below:${}$] (i2) at (10,1) {${}$};
+	 \node[red,label=below:${}$] (i3) at (8+1,2) {${}$};
+	 \node[red,label=below:${}$] (i4) at (10-2,2-1) {${}$};
+	 \node[red,label=below:${}$] (i5) at (10-1,2-1) {${}$};
+	 
+	 \draw[gray,dashed] (9,0+0.1) to (9,2);
+	 \draw[gray,dashed] (9-0.5,0+0.1) to (9-0.5,2);
+	 \draw[gray,dashed] (9+0.5,0+0.1) to (9+0.5,2);
+	 
+	 \node[label=below:$v$] (v) at (9,0) {$\bullet$};
+	 \node[label=left:$v_a$] (va) at (9,0.3) {$\circ$};	
+	 \node[label=above:$v_b$] (vb) at (9,2) {$\circ$};	
+	 
+	 \draw[->] (11,1.5) to (11.5,1.5);
+	 
+	 \node[label=below:$x$] (x2) at (15,0) {};
+	 \node[label=left:$y$] (y2) at (12,3) {};
+	 \draw[->] (12,0) -- (x2);
+	 \draw[->] (12,0) -- (y2);
+	 \node[label=below:${}$] (a1) at (13,2.5) {${}$};
+	 \node[label=below:${}$] (b1) at (12.5,0.5) {${}$};
+	 \node[label=below:${}$] (c1) at (15,2.5) {${}$};
+	 \node[label=below:${}$] (d1) at (14.5,0.5) {${}$};
+	 
+	 
+	 
+	 \draw (13,2.5) to [out=230, in=100](12.5,0.5);
+	 \draw (13,2.5) to (15,2.5);
+	 \draw (15,2.5) to [out=230, in=100](14.5,0.5);
+	 \draw (12.5,0.5) to (14.5,0.5);
+	 
+	 \node[red,label=below:${}$] (ii1) at (14,2.5) {${}$};
+	 \node[red,label=below:${}$] (ii2) at (13.5,0.5) {${}$};
+	 \node[red,label=below:${}$] (ii3) at (12.45,1.6) {${}$};
+	 \node[red,label=below:${}$] (ii4) at (14.45,1.6) {${}$};
+	 \node[red,label=below:${}$] (ii5) at (13.45,1.6) {${}$};
+	 
+	 \draw[gray,dashed] (14,2.5-0.1) to [out=230, in=100](13.5,0.5);
+	 \draw[gray,dashed] (14-0.5,2.5-0.1) to [out=230, in=100](13.5-0.5,0.5);
+	 \draw[gray,dashed] (14+0.5,2.5-0.1) to [out=230, in=100](13.5+0.5,0.5);
+	 \node[label=below:${v}$] (v1) at (13.5,0.5) {${\bullet}$};
+	 \node[label=left:${v_a}$] (v1a) at (13.45,0.8) {${\circ}$};
+	 \node[label=above right:${v_b}$] (v1b) at (14,2.5) {${\circ}$};
+	 
+	 \draw[blue] (13.566,0.1) -- (13,3.5);
+	 \draw[red] (13.4,0.1) -- (14.25,3.5);
+	\end{tikzpicture}
+	\caption{Bei Betrachtung eines verzerrten Elements wird deutlich, warum $v_{\text{neu}}$ möglichst nah an $v$
+	 gewählt werden sollte:
+	Auch wenn $v$, $v_a$ und $v_b$ im lokalen Koordinatensystem
+	auf der selben Geraden (Polynom nullter Ordnung) liegen, 
+	können die drei Punkte im globalen Koordinatensystem auf einem Polynom
+	höherer Ordnung liegen. Insofern approximiert eine Kante auf der Geraden zwischen dem näher gelegenen
+	$v_a$ und $v$ die Faserrichtung besser als eine Kante auf der Geraden zwischen $v_b$ und $v_a$ }
+	\label{figure:distance_v_vnew}
+	\end{figure}
+	\clearpage
+	Letztendlich wird die Darstellung der Faserrichtung in ProMesh als Kante zwischen zwei Knoten umgesetzt. 
+	Da die Distanz zwischen $v$ und
+	 $v_{\text{neu}}$ nach der Rücktransformation in globale Koordinaten ebenfalls sehr klein ist, wird ein 
+	 dritter Knoten erstellt. Dies geschieht direkt in globalen Koordinaten auf der Geraden $g_{v,\text{global}}$
+	  die von $v$ und
+	 $v_{\text{neu}}$ aufgespannt wird. Dabei findet zunächst eine Koordinatentransformation von <prolate
+	 spheroidal coordinates> zu euklidischen Koordinaten statt, diese können anschließend direkt von
+	 ProMesh gelesen werden. Für $g_{v,\text{global}}$ gilt:
+	 
+	 \begin{equation}
+	 g_{v,\text{global}} = \vec{v} + a \cdot (\vec{v}_{\text{neu}} - \vec{v})
+	 \label{global_gerade_fiber}
+	 \end{equation}
+	Wobei $\vec{v}$, $\vec{v}_{\text{neu}}$ die jeweiligen euklidischen Koordinaten von $v$, $v_{\text{neu}}$
+	sind und $a$ ein Parameter ist. Aus ästhetischen Gründen ist es sinnvoll, wenn alle Kanten, die letztendlich
+	die Richtung der Muskelfasern darstellen, die gleich Länge $d =2r$ haben. Außerdem wird im Folgenden,
+	anders als bisher, $v$ nicht einen Endpunkt der Kante darstellen, sondern in der Mitte liegen. Es werden
+	also zwei Knoten $v_r^+$ und $v_r^-$ gesucht, die von einer Kante verbunden werden. Für $v_r^{\pm}$
+	gilt unter Verwendung von \autoref{eq:gerade_fiber}:
+	 
+	 \begin{equation}
+	 v_r^{\pm} = \vec{v} \pm \frac{r}{||\vec{v}-\vec{v}_{\text{neu}}||_2} \cdot (\vec{v}_{\text{neu}} - \vec{v})
+	 \label{global_gerade_fiber}
+	 \end{equation}
+	 Wobei $||p - q||_2$ der euklidische Abstand zwischen zwei Punkten $p$ und $q$ ist.
+	Wird dieses Verfahren für jeden Knoten der gewünschten Verfeinerungsstufen durchgeführt, ergibt sich folgende
+	Darstellung:
+
+		\begin{figure}[h]
+	
+	\begin{subfigure}[t]{0.5\textwidth}
+		\centering
+		\includegraphics[height=5cm]{fibers_200_1.png}%
+		\caption{}
+	\end{subfigure}
+	~
+	\begin{subfigure}[t]{0.5\textwidth}
+		\centering
+		\includegraphics[height=5cm]{fibers_200_2.png}%
+		\caption{}
+	\end{subfigure}
 	
 	
+	\caption{Darstellung der Muskelfasern jeweils in der Mitte der Herzwand. Zweifache Verfeinerung
+	in jeweils horizontaler- und vertikaler Richtung TODO FACHWÖRTER}
+		
+	\label{figure:fibers_200}
+	\end{figure}
+			\begin{figure}[t]
+	
+	\begin{subfigure}[t]{0.5\textwidth}
+		\centering
+		\includegraphics[height=5cm]{fibers_200_1_surface.png}%
+		\caption{}
+	\end{subfigure}
+	~
+	\begin{subfigure}[t]{0.5\textwidth}
+		\centering
+		\includegraphics[height=5cm]{fibers_200_2_surface.png}%
+		\caption{}
+	\end{subfigure}
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	\caption{Darstellung der Muskelfasern jeweils and der Oberfläche der Herzwand. Zweifache Verfeinerung in
+	jeweils horizontaler- und vertikaler Richtung}
+		
+	\label{figure:fibers_200_surface}
+	\end{figure}
+	\begin{figure}
+	\centering
+	\includegraphics[height=5cm]{fibers_200_2_surface_center.png}
+	\caption{Ansicht (b) aus den vorherigen Abbildungen, diesmal mit den Muskelfasern an der Oberfläche und
+	in der Mitte der Herzwand überlagert. Die Muskelfasern an der Oberfläche sind gelb markiert.}
+	\label{figure:fibers_200_2_surface_center}
+	\end{figure}
+	Zu erkennen ist, dass die Muskelfasern an der Oberfläche des Herzens (siehe
+	 \autoref{figure:fibers_200_surface}) grundsätzlich anders verlaufen als
+	im Zentrum der Herzwand (siehe \autoref{figure:fibers_200}). 
+	An der Oberfläche verlaufen die Muskelfasern hauptsächlich vertikal, während
+	sie in der Mitte der Herzwand hauptsächlich horizontal verlaufen. Es wurde jeweils zweimal in horizontaler-
+	und vertikaler Raumrichtung verfeinert. In den Abbildungen (a) sind hinter den Muskelfasern der Herzwand
+	noch die Muskelfasern der Trennwand zwischen den beiden Herzkammern zu sehen. Interessant ist hierbei,
+	dass hier das Gegenteil passiert: auf der Oberfläche der Herztrennwand verlaufen die Muskelfasern
+	hauptsächlich horizontal, während die Muskelfasern in der Mitte der Herztrennwand vertikal verlaufen.
+	Zur genaueren Betrachtung sind im 
+	Anhang zusätzlich größere Abbildungen zugefügt. (TODO: REFERENZ)
 	
 	\iffalse\begin{verbatim}
 	 #Fields=2

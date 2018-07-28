@@ -16,7 +16,7 @@ class VTU_converter:
 		vtu_write.create_file(coo, numPoints, numCells, subsets, out, False)
 
 
-	def write_directional_field (self, coo, out = "fibres.vtu", r=1):
+	def fibers_to_vtu (self, coo, out = "fibres.vtu", r=1):
 		coordFile = open(coo, "r")
 		
 		num = vtu_write.directional_field(coordFile, r)

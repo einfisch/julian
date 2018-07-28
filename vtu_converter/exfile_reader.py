@@ -205,7 +205,7 @@ class exfile_reader:
 			element = ele_iter.next()
 			ele_template = element.getElementfieldtemplate(field, 1)
 
-	def create_directional_field (self, out_file = "fibres.exfile", refinement1 = 1, refinement2 = 1, refinement3 = 1):
+	def create_directional_field (self, out_file = "fibres.exfile", refinement1 = 1, refinement2 = 1, refinement3 = 1 ,surface=False):
 		fine_mesh_size = 60*2**refinement1 * 2**refinement2 * 2**refinement3 
 		print("generating fibres...")
 		program_status = ""
@@ -278,6 +278,9 @@ class exfile_reader:
 		node_set.destroyAllNodes()
 		#print(node_set.getSize())
 		fibers_created = 0
+
+
+
 		while c < mesh_size:
 			
 			element = mesh.findElementByIdentifier(c +1)
@@ -301,8 +304,10 @@ class exfile_reader:
 						 [0 + i*l1,l2 + j*l2,0 + k*l3],[l1 + i*l1,l2 + j*l2,0 + k*l3], [0 + i*l1,0 + j*l2,l3 + k*l3],\
 						 [l1 + i*l1,0 + j*l2,l3 + k*l3],\
 						  [0 + i*l1 ,l2 + j*l2,l3 + k*l3],[l1 + i*l1 ,l2 + j*l2,l3 + k*l3]]"""
-						local_node_coordinates = [[0.5*l1+i*l1, 0.5*l2+j*l2, 0.5*l3+k*l3]]	
-						#local_node_coordinates = [[1*l1+i*l1, 1*l2+j*l2, 1*l3+k*l3]]
+						if(surface):
+							local_node_coordinates = [[0.5*l1+i*l1, 0.5*l2+j*l2, 1*l3+k*l3]]
+						else:	
+							local_node_coordinates = [[0.5*l1+i*l1, 0.5*l2+j*l2, 0.5*l3+k*l3]]
                                                 #TODO: put this declaration out of loop, maybe do a function flag wether surface or center values are returned...
 
 						#print(local_node_coordinates)
@@ -347,10 +352,19 @@ class exfile_reader:
 							#print(fibre_angle)
 							x_angle = local_coords[2]#math.sin(fibre_angle) +  local_coords[2]
 							#y_angle =  0.00001*math.sin(  gamma -1.57079633 + fibre_angle) + local_coords[1]
-							y_angle =  0.00001*math.sin(fibre_angle) + local_coords[1]
-							z_angle =  0.00001*math.cos(fibre_angle) + local_coords[0]
-							bucket = 0
 							
+							slope = math.tan(fibre_angle)
+							
+							d = 0.0001*math.cos(fibre_angle)
+							##y_angle =  0.00001*math.sin(fibre_angle) + local_coords[1]
+							##z_angle =  0.00001*math.cos(fibre_angle) + local_coords[0]
+							y_angle = local_coords[1]  + slope*(d)
+							z_angle = local_coords[0] + d
+							
+							
+							bucket = 0
+							if(y_angle>10):
+								print(slope)
 							bucket_value = (coord_value - bucket_min)//bucket_interval
 							if bucket_value < 0:
 								bucket_value = 0
