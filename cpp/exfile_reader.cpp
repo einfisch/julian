@@ -604,7 +604,7 @@ void exfile_reader::create_interpolation(const char* out_file, int refinement1, 
 		//	std::cout << buckets[i].size() << std::endl;
 		//}
 }
-int main(){
+/*int main(){
 
 	exfile_reader ex_reader;
 	ex_reader.set_number_of_buckets(10000);
@@ -615,4 +615,4 @@ int main(){
 	ex_reader.create_directional_field("fibers.exfile", 2,2,0, true);
 	ex_reader.create_interpolation("heart_444.exfile" , 4,4,4);
 	return 1; 
-}
+}*/
