@@ -7,6 +7,8 @@
 #include <vector>
 #include <sstream>
 #include <typeinfo>
+#include <iomanip>
+
 void split(std::string str, char delimiter, std::vector<std::string> &vec_out) {
 	//seperate an input string at every delimiter char and write the reult in a given vector
   vec_out.clear();
@@ -158,6 +160,7 @@ std::vector<int> fiber_directions(std::string coordinates, double d){
 			x1 = std::stof(coords[0]);
 			y1 = std::stof(coords[1]);
 			z1 = std::stof(coords[2]);
+			//std::cout << std::setprecision(15) << std::fixed<< x << " " << x1 <<std::endl;
 			//calculate the direction vector of the straight line that approximates the 
 			//fiber órientation
 			v1 = x1 - x;
@@ -167,20 +170,22 @@ std::vector<int> fiber_directions(std::string coordinates, double d){
 			//fiber orientation is to be visualized must be in the middle of both points.
 			//norm the distance between the two points to d from the input values
 			b = v1*v1 + v2*v2 + v3*v3;
+			
 			lam = 0;
 			if(!(b == 0)){
 				lam = d/(std::sqrt(b));
 			}
+			
 			x2 = x - 0.5*lam*v1;
 			y2 = y - 0.5*lam*v2;
-			z2 = y - 0.5*lam*v3;
+			z2 = z - 0.5*lam*v3;
 
-			x3 = x - 0.5*lam*v1;
-			y3 = y - 0.5*lam*v2;
-			z3 = y - 0.5*lam*v3;
+			x3 = x + 0.5*lam*v1;
+			y3 = y + 0.5*lam*v2;
+			z3 = z + 0.5*lam*v3;
 
-			vertices << x2 << " " << y2 << " " << z2 << '\n';
-			vertices << x3 << " " << y3 << " " << z3 << '\n';
+			vertices << std::setprecision(10) << std::fixed<< x2 << " " << y2 << " " << z2 << '\n';
+			vertices << std::setprecision(10) << std::fixed<< x3 << " " << y3 << " " << z3 << '\n';
 
 		}
 		toggle = !toggle;
@@ -189,6 +194,8 @@ std::vector<int> fiber_directions(std::string coordinates, double d){
 		old_coords[0] = coords[0];
 		old_coords[1] = coords[1];
 		old_coords[2] = coords[2];
+		
+		
 
 	}
 
@@ -228,7 +235,7 @@ void create_file(std::string coordinates, int num_points, int num_cells, int reg
 	coordinates_file.open(coordinates);
 	std::getline(coordinates_file, line);
 	while(!(line.size() == 0)){
-		vtu_out << line << " \n";
+		vtu_out << std::setprecision(8) << std::fixed<< line << " \n";
 		line.clear();
 		std::getline(coordinates_file, line);
 	}

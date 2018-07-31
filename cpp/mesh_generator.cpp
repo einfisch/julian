@@ -85,11 +85,11 @@ int main(){
 
 	mesh_generator mesh_gen;
 	mesh_gen.set_exfile("heart1.exfile");
-	mesh_gen.set_out_file("heart331.vtu");
+	mesh_gen.set_out_file("heart222.vtu");
 	mesh_gen.set_number_of_buckets(10000);
 	mesh_gen.set_out_file_fibers("fibers220.vtu");
 	mesh_gen.set_refinement_fibers(2,2,0);
-	mesh_gen.set_refinement(4,4,4);
+	mesh_gen.set_refinement(2,2,2);
 	mesh_gen.generate_mesh(true);
 
 	return 0;

@@ -12,6 +12,8 @@
 #include <stdio.h>
 #include <map>
 #include <assert.h>
+#include <ios>
+#include <iomanip>
 using namespace OpenCMISS::Zinc;
 double distance(double coord1[], double coord2[]){
 
@@ -87,7 +89,7 @@ void exfile_reader::create_node_coordinates(std::string out_file){
 		//iterate over every node in the mesh and write the coordinates to the output file.
 		cache.setNode(node);
 		field.evaluateReal(cache, 3, out_values);
-		myfile << out_values[0] << " " <<out_values[1] << " " << out_values[2] <<"\r\n";
+		myfile << std::setprecision(15) << std::fixed << out_values[0] << " " <<out_values[1] << " " << out_values[2] <<"\r\n";
 		node = node_iter.next();
 		counter += 1;
 	}
@@ -121,7 +123,7 @@ void exfile_reader::create_node_connectivity(std::string out_file){
 			current_node = element.getNode(ele_template, i);
 			cache.setElement(element);
 			local_index = current_node.getIdentifier();
-			myfile << local_index << " ";
+			myfile << std::setprecision(15) << std::fixed<< local_index << " ";
 
 		}
 		myfile << "\r\n";
@@ -233,7 +235,7 @@ void exfile_reader::create_directional_field(const char* out_file, int refinemen
 					field_fibers.evaluateReal(cache, 3, out_values);
 					double fiber_angle = out_values[0];
 					double slope = std::tan(fiber_angle);
-					double d = 0.0001*std::cos(fiber_angle); 
+					double d = 0.001*std::cos(fiber_angle); 
 					double xi_3 = local_node_coordinates[2];
 					double xi_2 = local_node_coordinates[1] + slope*d;
 					double xi_1 = local_node_coordinates[0] + d;
@@ -347,7 +349,7 @@ void exfile_reader::create_fiber_values(std::string out_file){
 
 		cache.setNode(node);
 		field.evaluateReal(cache, 3, out_values);
-		myfile << out_values[0] << " " <<out_values[1] << " " << out_values[2] <<"\r\n";
+		myfile << std::setprecision(15) << std::fixed<< out_values[0] << " " <<out_values[1] << " " << out_values[2] <<"\r\n";
 		node = node_iter.next();
 		counter += 1;
 
